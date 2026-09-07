@@ -57,21 +57,46 @@
 <body class="h-full flex flex-col text-slate-800 antialiased selection:bg-sky-500 selection:text-white">
 
     <!-- TOP HEADER / BRAND BAR -->
-    <header class="bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-30 shadow-sm transition-all">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-col sm:flex-row items-center justify-between gap-4">
+<header class="bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-30 shadow-sm transition-all">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between gap-4">
+        
+        <!-- AMS Logo / System Title -->
+        <div class="flex items-center space-x-4 text-left">
             
-            <!-- AMS Logo Centered / Left -->
-            <div class="flex items-center space-x-4 text-center sm:text-left">
-                <!-- AMS Corporate Logo -->
-                <img src="https://www.alliedmfg.co.th/wp-content/uploads/2026/07/AMS-LOGO-V1.png" alt="AMS Logo" class="h-10 sm:h-12 w-auto object-contain hover:scale-105 transition-transform duration-300 drop-shadow-sm">
-                
-                <div class="border-l-2 border-slate-200 pl-4">
-                    <h1 class="text-lg sm:text-xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-sky-700 leading-tight">ระบบตรวจสอบคุณภาพงาน FA</h1>
-                    <p class="text-[11px] sm:text-xs text-slate-500 font-semibold tracking-wider uppercase mt-0.5">FA Quality Inspection System</p>
-                </div>
+            <!-- AMS Corporate Logo -->
+            <img src="https://www.alliedmfg.co.th/wp-content/uploads/2026/07/AMS-LOGO-V1.png"
+                 alt="AMS Logo"
+                 class="h-10 sm:h-12 w-auto object-contain hover:scale-105 transition-transform duration-300 drop-shadow-sm">
+            
+            <div class="border-l-2 border-slate-200 pl-4">
+                <h1 class="text-lg sm:text-xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-sky-700 leading-tight">
+                    ระบบตรวจสอบคุณภาพงาน FA
+                </h1>
+                <p class="text-[11px] sm:text-xs text-slate-500 font-semibold tracking-wider uppercase mt-0.5">
+                    FA Quality Inspection System
+                </p>
             </div>
         </div>
-    </header>
+
+        <!-- RIGHT HEADER NAVIGATION -->
+        <div class="flex items-center space-x-3">
+
+            <!-- Admin Button -->
+            <button id="navAdminBtn"
+                    onclick="handleAdminNavClick()"
+                    class="inline-flex items-center px-3 py-1.5 border border-slate-300 text-xs font-semibold rounded-lg bg-white text-slate-700 hover:bg-slate-50 hover:border-sky-400 hover:text-sky-700 transition shadow-sm">
+                
+                <i class="fa-solid fa-user-shield mr-2 text-sky-600"></i>
+                
+                <span id="adminBtnLabel">
+                    Admin Login
+                </span>
+            </button>
+
+        </div>
+
+    </div>
+</header>
 
     <!-- GLOBAL TOAST NOTIFICATION CONTAINER -->
     <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col space-y-2 pointer-events-none"></div>
