@@ -70,21 +70,6 @@
                     <p class="text-[11px] sm:text-xs text-slate-500 font-semibold tracking-wider uppercase mt-0.5">FA Quality Inspection System</p>
                 </div>
             </div>
-
-            <!-- Header Right Navigation & Status -->
-            <div class="flex items-center space-x-3">
-                <!-- API Sync Status Badge -->
-                <div id="connectionStatusBadge" class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200">
-                    <span class="w-2 h-2 mr-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
-                    <span id="connectionStatusText">Google Sheets Connected</span>
-                </div>
-
-                <!-- Admin Action Button -->
-                <button id="navAdminBtn" onclick="handleAdminNavClick()" class="inline-flex items-center px-3 py-1.5 border border-slate-300 text-xs font-semibold rounded-lg text-slate-700 bg-white hover:bg-slate-50 shadow-sm transition">
-                    <i class="fa-solid fa-user-shield text-sky-600 mr-1.5"></i>
-                    <span id="adminBtnLabel">Admin Login</span>
-                </button>
-            </div>
         </div>
     </header>
 
@@ -1044,17 +1029,13 @@
 
                 const res = await response.json();
                 if (res.success && Array.isArray(res.records)) {
-                    allJobRecords = res.records;
-                    populateCustomerFilterOptions();
-                    applyFilters();
-                    document.getElementById('connectionStatusText').innerText = 'Google Sheets Connected';
-                    document.getElementById('connectionStatusBadge').className = 'inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200';
-                }
+    allJobRecords = res.records;
+    populateCustomerFilterOptions();
+    applyFilters();
+}
             } catch (err) {
-                console.warn('Could not fetch GAS data or running stand-alone demo:', err);
-                document.getElementById('connectionStatusText').innerText = 'Standalone / Demo Mode';
-                document.getElementById('connectionStatusBadge').className = 'inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 border border-amber-200';
-            }
+    console.warn('Could not fetch GAS data:', err);
+}
         }
 
         function refreshDashboardData() {
