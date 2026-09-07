@@ -36,6 +36,363 @@
         }
     </script>
     <style>
+        /* =========================================================
+   RESPONSIVE FONT & UI SCALE
+   ปรับขนาดตัวหนังสือให้เหมาะกับหน้าจอคอมพิวเตอร์
+   ========================================================= */
+
+/* ---------- Base ---------- */
+html {
+    font-size: 16px;
+}
+
+body {
+    font-family: 'Sarabun', 'Inter', sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+/* ---------- Header ---------- */
+header h1 {
+    font-size: clamp(1.05rem, 1.2vw, 1.35rem) !important;
+}
+
+header p {
+    font-size: clamp(0.72rem, 0.8vw, 0.85rem) !important;
+}
+
+#navAdminBtn {
+    font-size: 0.85rem !important;
+    padding-top: 0.55rem !important;
+    padding-bottom: 0.55rem !important;
+}
+
+/* ---------- Main Page ---------- */
+main {
+    font-size: 1rem;
+}
+
+/* ---------- Section Titles ---------- */
+#viewUserDeptSelect h2,
+#viewUserSubtopicSelect h2 {
+    font-size: clamp(1.4rem, 2vw, 1.8rem) !important;
+}
+
+#viewUserDeptSelect p,
+#viewUserSubtopicSelect p {
+    font-size: clamp(0.9rem, 1vw, 1rem) !important;
+}
+
+/* ---------- Department Cards ---------- */
+#viewUserDeptSelect h3 {
+    font-size: 1.25rem !important;
+}
+
+#viewUserDeptSelect .text-xs {
+    font-size: 0.9rem !important;
+}
+
+/* ---------- Subtopic Cards ---------- */
+#subtopicCardsContainer h4 {
+    font-size: 1.05rem !important;
+}
+
+#subtopicCardsContainer p {
+    font-size: 0.88rem !important;
+}
+
+/* ---------- Breadcrumb ---------- */
+#viewUserSubtopicSelect .text-xs,
+#viewUserForm .text-xs {
+    font-size: 0.85rem !important;
+}
+
+/* ---------- Form ---------- */
+#viewUserForm label {
+    font-size: 0.9rem !important;
+}
+
+#viewUserForm input,
+#viewUserForm select,
+#viewUserForm textarea {
+    font-size: 0.9rem !important;
+    min-height: 42px;
+}
+
+#viewUserForm textarea {
+    min-height: 90px;
+}
+
+#formTitleText {
+    font-size: 1.15rem !important;
+}
+
+#viewUserForm .text-xs {
+    font-size: 0.85rem !important;
+}
+
+/* ---------- Form Buttons ---------- */
+#viewUserForm button {
+    font-size: 0.9rem !important;
+    min-height: 40px;
+}
+
+/* ---------- Live Clock ---------- */
+#liveClockBadge {
+    font-size: 0.85rem !important;
+}
+
+/* =========================================================
+   ADMIN DASHBOARD
+   ========================================================= */
+
+/* Dashboard Header */
+#viewAdminDashboard h2 {
+    font-size: clamp(1.15rem, 1.5vw, 1.4rem) !important;
+}
+
+#viewAdminDashboard .text-xs {
+    font-size: 0.85rem !important;
+}
+
+/* Dashboard description */
+#viewAdminDashboard h2 + p {
+    font-size: 0.85rem !important;
+}
+
+/* ---------- KPI Cards ---------- */
+#viewAdminDashboard [id^="kpi"] {
+    font-size: clamp(1.7rem, 2.2vw, 2.1rem) !important;
+}
+
+#viewAdminDashboard .font-medium,
+#viewAdminDashboard .font-semibold {
+    font-size: 0.88rem;
+}
+
+/* ---------- Filter ---------- */
+#viewAdminDashboard select,
+#viewAdminDashboard input {
+    font-size: 0.88rem !important;
+    min-height: 40px;
+}
+
+#viewAdminDashboard label {
+    font-size: 0.85rem !important;
+}
+
+/* ---------- Table ---------- */
+#viewAdminDashboard table {
+    font-size: 0.9rem !important;
+}
+
+#viewAdminDashboard th {
+    font-size: 0.85rem !important;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+#viewAdminDashboard td {
+    font-size: 0.9rem !important;
+}
+
+/* วันที่ในตาราง */
+#viewAdminDashboard td .text-\[10px\] {
+    font-size: 0.78rem !important;
+}
+
+/* Status Badge */
+#viewAdminDashboard td span {
+    font-size: 0.78rem !important;
+}
+
+/* Action Button */
+#viewAdminDashboard td button {
+    font-size: 0.82rem !important;
+    min-height: 34px;
+}
+
+/* =========================================================
+   ADMIN MODAL
+   ========================================================= */
+
+#modalAdminLogin label,
+#modalAdminLogin input,
+#modalAdminLogin button {
+    font-size: 0.9rem !important;
+}
+
+#modalAdminLogin input {
+    min-height: 42px;
+}
+
+/* Inspection Modal */
+#modalAdminInspection {
+    font-size: 0.9rem;
+}
+
+#modalJobBadge {
+    font-size: 0.78rem !important;
+}
+
+#modalJobTitle {
+    font-size: 1.05rem !important;
+}
+
+/* User Detail */
+#modalUserDetailGrid {
+    font-size: 0.88rem !important;
+}
+
+#modalUserDetailGrid .text-slate-400 {
+    font-size: 0.8rem !important;
+}
+
+#modalUserDetailGrid p {
+    font-size: 0.9rem !important;
+}
+
+/* Inspection Form */
+#adminInspectionForm label {
+    font-size: 0.9rem !important;
+}
+
+#adminInspectionForm select,
+#adminInspectionForm textarea {
+    font-size: 0.9rem !important;
+}
+
+#adminInspectionForm select {
+    min-height: 42px;
+}
+
+#adminInspectionForm textarea {
+    min-height: 90px;
+}
+
+#adminInspectionForm button {
+    font-size: 0.88rem !important;
+    min-height: 40px;
+}
+
+/* =========================================================
+   LARGE COMPUTER SCREEN
+   ========================================================= */
+
+@media (min-width: 1440px) {
+
+    body {
+        font-size: 17px;
+    }
+
+    main {
+        max-width: 1400px !important;
+    }
+
+    #viewUserDeptSelect h2,
+    #viewUserSubtopicSelect h2 {
+        font-size: 1.9rem !important;
+    }
+
+    #viewUserDeptSelect h3 {
+        font-size: 1.35rem !important;
+    }
+
+    #viewUserForm label {
+        font-size: 0.95rem !important;
+    }
+
+    #viewUserForm input,
+    #viewUserForm select,
+    #viewUserForm textarea {
+        font-size: 0.95rem !important;
+    }
+
+    #viewAdminDashboard table {
+        font-size: 0.95rem !important;
+    }
+
+    #viewAdminDashboard th {
+        font-size: 0.9rem !important;
+    }
+
+    #viewAdminDashboard td {
+        font-size: 0.95rem !important;
+    }
+}
+
+/* =========================================================
+   NOTEBOOK / SMALL DESKTOP
+   ========================================================= */
+
+@media (min-width: 1024px) and (max-width: 1439px) {
+
+    body {
+        font-size: 16px;
+    }
+
+    #viewAdminDashboard table {
+        font-size: 0.86rem !important;
+    }
+
+    #viewAdminDashboard th {
+        font-size: 0.8rem !important;
+    }
+
+    #viewAdminDashboard td {
+        font-size: 0.85rem !important;
+    }
+}
+
+/* =========================================================
+   TABLET / MOBILE
+   ========================================================= */
+
+@media (max-width: 767px) {
+
+    body {
+        font-size: 15px;
+    }
+
+    header h1 {
+        font-size: 1rem !important;
+    }
+
+    header p {
+        font-size: 0.65rem !important;
+    }
+
+    #navAdminBtn {
+        font-size: 0.75rem !important;
+    }
+
+    #viewUserDeptSelect h2,
+    #viewUserSubtopicSelect h2 {
+        font-size: 1.35rem !important;
+    }
+
+    #viewUserForm label {
+        font-size: 0.82rem !important;
+    }
+
+    #viewUserForm input,
+    #viewUserForm select,
+    #viewUserForm textarea {
+        font-size: 0.85rem !important;
+    }
+
+    #viewAdminDashboard table {
+        font-size: 0.78rem !important;
+    }
+
+    #viewAdminDashboard th {
+        font-size: 0.75rem !important;
+    }
+
+    #viewAdminDashboard td {
+        font-size: 0.78rem !important;
+    }
+}
         body { font-family: 'Sarabun', 'Inter', sans-serif; }
         .glass-card {
             background: rgba(255, 255, 255, 0.95);
