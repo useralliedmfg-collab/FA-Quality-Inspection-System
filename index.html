@@ -102,7 +102,7 @@
     <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col space-y-2 pointer-events-none"></div>
 
     <!-- GLOBAL LOADING SPINNER OVERLAY -->
-    <div id="globalLoader" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center hidden">
+    <div id="globalLoader" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[100] flex items-center justify-center hidden">
         <div class="bg-white p-6 rounded-2xl shadow-2xl flex flex-col items-center space-y-3 max-w-xs text-center border border-slate-100">
             <div class="w-12 h-12 border-4 border-sky-500 border-t-transparent rounded-full animate-spin"></div>
             <p id="loaderText" class="text-sm font-semibold text-slate-700">กำลังประมวลผลข้อมูล...</p>
@@ -1281,7 +1281,15 @@
 
         async function handleSaveInspectionResult(event) {
             event.preventDefault();
-            showLoader('กำลังบันทึกผลการตรวจสอบไปยัง Google Sheets...');
+            showLoader('กำลังบันทึกผลการตรวจสอบ...');
+
+            // Disable submit button & show spinner icon on button
+            const submitBtn = event.target.querySelector('button[type="submit"]');
+            const originalBtnHtml = submitBtn ? submitBtn.innerHTML : '';
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = `<i class="fa-solid fa-spinner animate-spin mr-1.5"></i> <span>กำลังบันทึก...</span>`;
+            }
 
             const id = document.getElementById('modalHiddenJobId').value;
             const sheetName = document.getElementById('modalHiddenSheetName').value;
@@ -1301,8 +1309,11 @@
                 remark: remark
             };
 
+            // Ensure loading spinner display is smoothly visible (~800ms)
+            const minLoadPromise = new Promise(resolve => setTimeout(resolve, 800));
+
             try {
-                const response = await fetch(SCRIPT_URL, {
+                const responsePromise = fetch(SCRIPT_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                     body: JSON.stringify({
@@ -1311,8 +1322,14 @@
                     })
                 });
 
+                const [response] = await Promise.all([responsePromise, minLoadPromise]);
                 const res = await response.json();
+                
                 hideLoader();
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalBtnHtml;
+                }
 
                 if (res.success) {
                     showToast('บันทึกผลการตรวจสอบเรียบร้อยแล้ว', 'success');
@@ -1332,7 +1349,12 @@
                     showToast('เกิดข้อผิดพลาด: ' + res.message, 'error');
                 }
             } catch (err) {
+                await minLoadPromise;
                 hideLoader();
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalBtnHtml;
+                }
                 console.error(err);
                 // Fallback local update
                 const rec = allJobRecords.find(r => r.id === id);
