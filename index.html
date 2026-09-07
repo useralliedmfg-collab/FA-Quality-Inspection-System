@@ -69,7 +69,7 @@
                 </div>
                 <div>
                     <h1 class="text-lg font-bold text-slate-900 leading-tight">ระบบตรวจสอบคุณภาพงาน FA</h1>
-                    <p class="text-xs text-slate-500 font-medium">FA Quality Inspection System</p>
+                    <p class="text-xs text-slate-500 font-medium">FA Quality Inspection System1</p>
                 </div>
             </div>
 
@@ -533,7 +533,10 @@
             mouldSenders: ['วิศวกร Mould 1', 'วิศวกร Mould 2', 'ช่างพิมพ์ A'],
             jigSenders: ['ช่าง JIG 1', 'ช่าง JIG 2', 'Engineer A'],
             jobSenders: ['พนักงานผลิต 1', 'หัวหน้างาน Production', 'OP-01', 'OP-02'],
-            machines: ['CDC1', 'CDC2', 'CDC3', 'CDC4']
+            machines: {
+                'CDC': ['CDC1', 'CDC2', 'CDC3', 'CDC4'],
+                'PACKING': ['PACK1', 'PACK2']
+            }
         };
 
         // INITIALIZATION ON LOAD
@@ -744,8 +747,6 @@
             }
             // 6.1 FIRST SHOT FA
             else if (subtopic === 'FIRST SHOT FA') {
-                const machineOptionsHtml = DROPDOWN_DATA.machines.map(m => `<option value="${m}">${m}</option>`).join('');
-
                 fieldsContainer.innerHTML = `
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-1">FA NO. (รับตัวเลขและสัญลักษณ์ เช่น /) <span class="text-rose-500">*</span></label>
@@ -767,26 +768,37 @@
                         <input type="number" name="rev" required min="0" placeholder="0" class="w-full text-xs rounded-lg border-slate-300 p-2.5 border">
                     </div>
                     <div class="md:col-span-2">
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">TOOLING REQUIRE</label>
-                        <div class="flex flex-wrap gap-4 p-3 bg-slate-50 rounded-lg border border-slate-200">
-                            <label class="inline-flex items-center text-xs font-medium cursor-pointer"><input type="radio" name="toolingRequire" value="TOOLING" class="text-sky-600 mr-2 focus:ring-sky-500"> TOOLING</label>
-                            <label class="inline-flex items-center text-xs font-medium cursor-pointer"><input type="radio" name="toolingRequire" value="LASER" class="text-sky-600 mr-2 focus:ring-sky-500"> LASER</label>
-                            <label class="inline-flex items-center text-xs font-medium cursor-pointer"><input type="radio" name="toolingRequire" value="CDC" class="text-sky-600 mr-2 focus:ring-sky-500"> CDC</label>
-                            <label class="inline-flex items-center text-xs font-medium cursor-pointer"><input type="radio" name="toolingRequire" value="V-CUT" class="text-sky-600 mr-2 focus:ring-sky-500"> V-CUT</label>
+                        <div class="flex items-center justify-between mb-1">
+                            <label class="block text-xs font-semibold text-slate-700">TOOLING REQUIRE</label>
+                            <button type="button" onclick="clearToolingRequire()" class="text-[11px] text-sky-600 hover:text-sky-800 font-medium underline">ล้างการเลือก</button>
                         </div>
+                        <div class="flex flex-wrap gap-4 p-3 bg-slate-50 rounded-lg border border-slate-200">
+                            <label class="inline-flex items-center text-xs font-medium cursor-pointer"><input type="radio" name="toolingRequire" value="TOOLING" onchange="handleToolingRequireChange(this)" class="text-sky-600 mr-2 focus:ring-sky-500"> TOOLING</label>
+                            <label class="inline-flex items-center text-xs font-medium cursor-pointer"><input type="radio" name="toolingRequire" value="LASER" onchange="handleToolingRequireChange(this)" class="text-sky-600 mr-2 focus:ring-sky-500"> LASER</label>
+                            <label class="inline-flex items-center text-xs font-medium cursor-pointer"><input type="radio" name="toolingRequire" value="CDC" onchange="handleToolingRequireChange(this)" class="text-sky-600 mr-2 focus:ring-sky-500"> CDC</label>
+                            <label class="inline-flex items-center text-xs font-medium cursor-pointer"><input type="radio" name="toolingRequire" value="V-CUT" onchange="handleToolingRequireChange(this)" class="text-sky-600 mr-2 focus:ring-sky-500"> V-CUT</label>
+                        </div>
+                    </div>
+                    <!-- Cascading Machine Selection -->
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">กลุ่มเครื่องผลิต <span class="text-rose-500">*</span></label>
+                        <select id="machineCategory" onchange="handleMachineCategoryChange(this)" required class="w-full text-xs rounded-lg border-slate-300 p-2.5 border">
+                            <option value="">-- เลือกกลุ่มเครื่อง --</option>
+                            <option value="CDC">CDC</option>
+                            <option value="PACKING">PACKING</option>
+                        </select>
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-1">เครื่องที่ผลิต <span class="text-rose-500">*</span></label>
-                        <select name="machine" required class="w-full text-xs rounded-lg border-slate-300 p-2.5 border">
-                            <option value="">-- เลือกเครื่องที่ผลิต --</option>
-                            ${machineOptionsHtml}
+                        <select id="machineSelect" name="machine" required disabled class="w-full text-xs rounded-lg border-slate-300 p-2.5 border bg-slate-50 disabled:bg-slate-100 disabled:text-slate-400">
+                            <option value="">-- กรุณาเลือกกลุ่มเครื่องก่อน --</option>
                         </select>
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-1">PACK</label>
                         <div class="p-2.5 bg-slate-50 rounded-lg border border-slate-200 flex items-center">
                             <label class="inline-flex items-center text-xs font-semibold cursor-pointer">
-                                <input type="checkbox" name="pack" value="true" class="rounded text-sky-600 mr-2">
+                                <input type="checkbox" name="pack" value="true" id="packCheckbox" onchange="handlePackChange(this)" class="rounded text-sky-600 mr-2">
                                 <span>PACK ชิ้นงานแล้ว</span>
                             </label>
                         </div>
@@ -855,6 +867,60 @@
                 container.classList.add('hidden');
                 detailInput.removeAttribute('required');
                 detailInput.value = '';
+            }
+        }
+
+        function handleMachineCategoryChange(categorySelect) {
+            const machineSelect = document.getElementById('machineSelect');
+            if (!machineSelect) return;
+            const category = categorySelect.value;
+            
+            machineSelect.innerHTML = '<option value="">-- เลือกเครื่องที่ผลิต --</option>';
+            
+            if (category && DROPDOWN_DATA.machines[category]) {
+                DROPDOWN_DATA.machines[category].forEach(m => {
+                    machineSelect.innerHTML += `<option value="${m}">${m}</option>`;
+                });
+                machineSelect.disabled = false;
+                machineSelect.classList.remove('bg-slate-50', 'disabled:bg-slate-100', 'disabled:text-slate-400');
+            } else {
+                machineSelect.disabled = true;
+                machineSelect.innerHTML = '<option value="">-- กรุณาเลือกกลุ่มเครื่องก่อน --</option>';
+                machineSelect.classList.add('bg-slate-50');
+            }
+        }
+
+        function handleToolingRequireChange(radioEl) {
+            const packCheckbox = document.getElementById('packCheckbox');
+            if (packCheckbox) {
+                packCheckbox.checked = false;
+                packCheckbox.disabled = true;
+            }
+        }
+
+        function clearToolingRequire() {
+            const radios = document.getElementsByName('toolingRequire');
+            radios.forEach(r => {
+                r.checked = false;
+                r.disabled = false;
+            });
+            const packCheckbox = document.getElementById('packCheckbox');
+            if (packCheckbox) {
+                packCheckbox.disabled = false;
+            }
+        }
+
+        function handlePackChange(packCheckbox) {
+            const radios = document.getElementsByName('toolingRequire');
+            if (packCheckbox.checked) {
+                radios.forEach(r => {
+                    r.checked = false;
+                    r.disabled = true;
+                });
+            } else {
+                radios.forEach(r => {
+                    r.disabled = false;
+                });
             }
         }
 
