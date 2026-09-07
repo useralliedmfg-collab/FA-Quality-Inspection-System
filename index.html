@@ -1,45 +1,18 @@
 <!DOCTYPE html>
-<html lang="th" class="h-full bg-slate-50">
+<html lang="th">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AMS - FA Quality Inspection System</title>
-    <!-- Tailwind CSS CDN -->
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome CDN for Icons -->
+    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Font: Inter & Sarabun -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Sarabun', 'Inter', 'sans-serif'],
-                    },
-                    colors: {
-                        corporate: {
-                            50: '#f0f7ff',
-                            100: '#e0effe',
-                            500: '#0284c7',
-                            600: '#026597',
-                            700: '#0369a1',
-                            800: '#075985',
-                            900: '#0c4a6e',
-                        }
-                    }
-                }
-            }
-        }
-    </script>
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Sarabun', 'Inter', sans-serif; }
-        .glass-card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
+        body {
+            font-family: 'Inter', sans-serif;
         }
         .custom-scrollbar::-webkit-scrollbar {
             width: 6px;
@@ -52,179 +25,161 @@
             background: #cbd5e1;
             border-radius: 4px;
         }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
     </style>
 </head>
-<body class="h-full flex flex-col text-slate-800 antialiased selection:bg-sky-500 selection:text-white">
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col justify-between selection:bg-sky-500 selection:text-white">
 
-    <!-- TOP HEADER / BRAND BAR -->
-<header class="bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-30 shadow-sm transition-all">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between gap-4">
-        
-        <!-- AMS Logo / System Title -->
-        <div class="flex items-center space-x-4 text-left">
-            
-            <!-- AMS Corporate Logo -->
-            <img src="https://www.alliedmfg.co.th/wp-content/uploads/2026/07/AMS-LOGO-V1.png"
-                 alt="AMS Logo"
-                 class="h-10 sm:h-12 w-auto object-contain hover:scale-105 transition-transform duration-300 drop-shadow-sm">
-            
-            <div class="border-l-2 border-slate-200 pl-4">
-                <h1 class="text-lg sm:text-xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-sky-700 leading-tight">
-                    ระบบตรวจสอบคุณภาพงาน FA
-                </h1>
-                <p class="text-[11px] sm:text-xs text-slate-500 font-semibold tracking-wider uppercase mt-0.5">
-                    FA Quality Inspection System
-                </p>
-            </div>
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[100] flex flex-col items-center justify-center hidden">
+        <div class="bg-white p-6 rounded-2xl shadow-xl flex items-center space-x-4 border border-slate-100">
+            <div class="animate-spin rounded-full h-8 w-8 border-4 border-sky-600 border-t-transparent"></div>
+            <span class="text-slate-700 font-semibold text-sm" id="loadingText">กำลังประมวลผล...</span>
         </div>
+    </div>
 
-        <!-- RIGHT HEADER NAVIGATION -->
-        <div class="flex items-center space-x-3">
+    <!-- Toast Notification -->
+    <div id="toastContainer" class="fixed top-5 right-5 z-[110] flex flex-col space-y-2 pointer-events-none"></div>
 
-            <!-- Admin Button -->
-            <button id="navAdminBtn"
-                    onclick="handleAdminNavClick()"
-                    class="inline-flex items-center px-3 py-1.5 border border-slate-300 text-xs font-semibold rounded-lg bg-white text-slate-700 hover:bg-slate-50 hover:border-sky-400 hover:text-sky-700 transition shadow-sm">
-                
-                <i class="fa-solid fa-user-shield mr-2 text-sky-600"></i>
-                
-                <span id="adminBtnLabel">
+    <!-- Header Section with Logo -->
+    <header class="bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-40 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="navigateToHome()">
+                <div class="bg-white p-2 rounded-xl border border-slate-100 shadow-sm flex items-center justify-center">
+                    <img src="https://www.alliedmfg.co.th/wp-content/uploads/2026/07/AMS-LOGO-V1.png" alt="AMS Logo" class="h-10 object-contain" onerror="this.src='https://placehold.co/120x40/0284c7/ffffff?text=AMS+LOGO'">
+                </div>
+                <div>
+                    <h1 class="text-sm font-bold bg-gradient-to-r from-sky-700 to-indigo-700 bg-clip-text text-transparent tracking-tight">FA QUALITY INSPECTION</h1>
+                    <p class="text-[10px] text-slate-400 font-medium tracking-wide">SYSTEM AUTOMATION</p>
+                </div>
+            </div>
+
+            <!-- Header Action Controls -->
+            <div class="flex items-center space-x-2">
+                <button id="navAdminBtn" onclick="openAdminLoginModal()" class="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-xl transition flex items-center shadow-sm">
+                    <i class="fa-solid fa-lock text-sky-600 mr-1.5"></i>
                     Admin Login
-                </span>
-            </button>
-
+                </button>
+            </div>
         </div>
+    </header>
 
-    </div>
-</header>
-
-    <!-- GLOBAL TOAST NOTIFICATION CONTAINER -->
-    <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col space-y-2 pointer-events-none"></div>
-
-    <!-- GLOBAL LOADING SPINNER OVERLAY -->
-    <div id="globalLoader" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[100] flex items-center justify-center hidden">
-        <div class="bg-white p-6 rounded-2xl shadow-2xl flex flex-col items-center space-y-3 max-w-xs text-center border border-slate-100">
-            <div class="w-12 h-12 border-4 border-sky-500 border-t-transparent rounded-full animate-spin"></div>
-            <p id="loaderText" class="text-sm font-semibold text-slate-700">กำลังประมวลผลข้อมูล...</p>
-        </div>
-    </div>
-
-    <!-- MAIN CONTENT CONTAINER -->
-    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
-
-        <!-- VIEW 1: USER DEPARTMENT SELECTION -->
-        <section id="viewUserDeptSelect" class="space-y-6">
-            <div class="text-center max-w-xl mx-auto py-4">
-                <span class="inline-block px-3 py-1 text-xs font-semibold text-sky-700 bg-sky-50 rounded-full mb-2">ยินดีต้อนรับสู่ระบบส่งงาน FA</span>
-                <h2 class="text-2xl font-bold text-slate-900">กรุณาเลือกแผนกที่ต้องการส่งงาน</h2>
-                <p class="text-slate-500 text-sm mt-1">เลือกแผนกเพื่อเข้าสู่แบบฟอร์มตรวจสอบคุณภาพงาน</p>
+    <!-- Main Container -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        <!-- STEP 1: Department Selection View -->
+        <div id="viewDeptSelect" class="space-y-6">
+            <div class="text-center max-w-2xl mx-auto space-y-2">
+                <span class="px-3 py-1 bg-sky-50 text-sky-700 rounded-full text-xs font-bold uppercase tracking-wider border border-sky-100">เลือกแผนกงาน</span>
+                <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900">กรุณาเลือกแผนกของคุณเพื่อเริ่มส่งงานตรวจสอบ</h2>
+                <p class="text-sm text-slate-500">ระบบตรวจสอบคุณภาพชิ้นงาน แม่พิมพ์ และอุปกรณ์ฟิกเจอร์ภายในบริษัท</p>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto">
-                <!-- Engineer Card -->
-                <button onclick="selectDepartment('Engineer')" class="group relative bg-white rounded-2xl p-6 border-2 border-slate-200 hover:border-sky-500 shadow-sm hover:shadow-xl transition-all duration-300 text-left flex flex-col justify-between overflow-hidden">
-                    <div class="absolute top-0 right-0 w-24 h-24 bg-sky-500/10 rounded-bl-full -mr-4 -mt-4 transition-transform group-hover:scale-110"></div>
-                    <div>
-                        <div class="w-14 h-14 rounded-xl bg-sky-100 text-sky-600 flex items-center justify-center text-2xl font-bold mb-4 group-hover:bg-sky-600 group-hover:text-white transition-colors">
-                            <i class="fa-solid fa-microchip"></i>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto pt-6">
+                <!-- Engineer Dept Card -->
+                <div onclick="selectDepartment('Engineer')" class="group bg-white rounded-3xl p-8 border border-slate-200/80 shadow-sm hover:shadow-xl hover:border-sky-500 transition-all duration-300 cursor-pointer flex flex-col justify-between relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-sky-50 rounded-full -mr-10 -mt-10 group-hover:scale-125 transition-transform duration-500 pointer-events-none"></div>
+                    <div class="relative z-10 space-y-4">
+                        <div class="w-14 h-14 bg-sky-600 text-white rounded-2xl flex items-center justify-center text-2xl shadow-lg shadow-sky-600/30 group-hover:rotate-6 transition-transform">
+                            <i class="fa-solid fa-gears"></i>
                         </div>
-                        <h3 class="text-xl font-bold text-slate-900 group-hover:text-sky-600 transition-colors">Engineer</h3>
-                        <p class="text-slate-500 text-xs mt-2">แผนกวิศวกรรม (DIECUT INSPECTION & JIG FA)</p>
+                        <div>
+                            <span class="text-xs font-bold text-sky-600 uppercase tracking-wider">Department 01</span>
+                            <h3 class="text-2xl font-bold text-slate-900 mt-1">Engineer</h3>
+                            <p class="text-xs text-slate-500 mt-2 leading-relaxed">สำหรับส่งตรวจสอบแม่พิมพ์ Diecut และอุปกรณ์ Jig การผลิตต่างๆ</p>
+                        </div>
                     </div>
-                    <div class="mt-6 flex items-center text-xs font-semibold text-sky-600">
-                        <span>เลือกหัวข้อย่อย</span>
-                        <i class="fa-solid fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
+                    <div class="relative z-10 mt-8 pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-sky-600 group-hover:translate-x-1 transition-transform">
+                        <span>เลือกหัวข้อย่อย (DIECUT / JIG)</span>
+                        <i class="fa-solid fa-arrow-right"></i>
                     </div>
-                </button>
+                </div>
 
-                <!-- Production Card -->
-                <button onclick="selectDepartment('Production')" class="group relative bg-white rounded-2xl p-6 border-2 border-slate-200 hover:border-emerald-500 shadow-sm hover:shadow-xl transition-all duration-300 text-left flex flex-col justify-between overflow-hidden">
-                    <div class="absolute top-0 right-0 w-24 h-24 bg-emerald-500/10 rounded-bl-full -mr-4 -mt-4 transition-transform group-hover:scale-110"></div>
-                    <div>
-                        <div class="w-14 h-14 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-2xl font-bold mb-4 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
+                <!-- Production Dept Card -->
+                <div onclick="selectDepartment('Production')" class="group bg-white rounded-3xl p-8 border border-slate-200/80 shadow-sm hover:shadow-xl hover:border-emerald-500 transition-all duration-300 cursor-pointer flex flex-col justify-between relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-emerald-50 rounded-full -mr-10 -mt-10 group-hover:scale-125 transition-transform duration-500 pointer-events-none"></div>
+                    <div class="relative z-10 space-y-4">
+                        <div class="w-14 h-14 bg-emerald-600 text-white rounded-2xl flex items-center justify-center text-2xl shadow-lg shadow-emerald-600/30 group-hover:rotate-6 transition-transform">
                             <i class="fa-solid fa-industry"></i>
                         </div>
-                        <h3 class="text-xl font-bold text-slate-900 group-hover:text-emerald-600 transition-colors">Production</h3>
-                        <p class="text-slate-500 text-xs mt-2">แผนกการผลิต (FIRST SHOT FA & FA FG)</p>
+                        <div>
+                            <span class="text-xs font-bold text-emerald-600 uppercase tracking-wider">Department 02</span>
+                            <h3 class="text-2xl font-bold text-slate-900 mt-1">Production</h3>
+                            <p class="text-xs text-slate-500 mt-2 leading-relaxed">สำหรับส่งตรวจสอบงาน First Shot FA และงานสำเร็จรูป FA FG</p>
+                        </div>
                     </div>
-                    <div class="mt-6 flex items-center text-xs font-semibold text-emerald-600">
-                        <span>เลือกหัวข้อย่อย</span>
-                        <i class="fa-solid fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
+                    <div class="relative z-10 mt-8 pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-emerald-600 group-hover:translate-x-1 transition-transform">
+                        <span>เลือกหัวข้อย่อย (FIRST SHOT / FG)</span>
+                        <i class="fa-solid fa-arrow-right"></i>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- STEP 2: Sub-topic Selection View -->
+        <div id="viewSubtopicSelect" class="space-y-6 hidden">
+            <div class="flex items-center justify-between max-w-4xl mx-auto">
+                <button onclick="navigateToHome()" class="px-3.5 py-2 bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 text-xs font-semibold rounded-xl transition flex items-center shadow-sm">
+                    <i class="fa-solid fa-arrow-left mr-1.5"></i>
+                    ย้อนกลับเลือกแผนก
                 </button>
-            </div>
-        </section>
-
-        <!-- VIEW 2: USER SUBTOPIC SELECTION -->
-        <section id="viewUserSubtopicSelect" class="space-y-6 hidden">
-            <div class="flex items-center space-x-2 text-xs font-medium text-slate-500">
-                <button onclick="showView('viewUserDeptSelect')" class="hover:text-sky-600"><i class="fa-solid fa-house mr-1"></i> หน้าหลัก</button>
-                <span>/</span>
-                <span id="breadcrumbDeptName" class="text-slate-900 font-semibold">Engineer</span>
+                <div id="selectedDeptBadge" class="px-3 py-1 bg-slate-100 rounded-full text-xs font-bold text-slate-700"></div>
             </div>
 
-            <div class="text-center max-w-xl mx-auto">
-                <h2 class="text-2xl font-bold text-slate-900">เลือกหัวข้อย่อยของงาน</h2>
-                <p class="text-slate-500 text-sm mt-1">กรุณาเลือกหัวข้อที่ตรงกับงานที่ต้องการส่งตรวจสอบ</p>
+            <div class="text-center max-w-2xl mx-auto space-y-2">
+                <h2 class="text-2xl font-extrabold text-slate-900">เลือกหัวข้อย่อยในการตรวจสอบ</h2>
+                <p class="text-xs text-slate-500">เลือกประเภทฟอร์มที่ต้องการกรอกข้อมูลเพื่อส่งตรวจ</p>
             </div>
 
-            <div id="subtopicCardsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto">
-                <!-- Subtopic buttons injected dynamically based on department -->
+            <div id="subtopicCardsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto pt-2">
+                <!-- Injected Dynamically -->
             </div>
-        </section>
+        </div>
 
-        <!-- VIEW 3: USER FORM INPUT SCREEN -->
-        <section id="viewUserForm" class="space-y-6 hidden">
-            <div class="flex items-center justify-between text-xs font-medium text-slate-500">
-                <div class="flex items-center space-x-2">
-                    <button onclick="showView('viewUserSubtopicSelect')" class="hover:text-sky-600"><i class="fa-solid fa-chevron-left mr-1"></i> ย้อนกลับ</button>
-                    <span>/</span>
-                    <span id="formBreadcrumbDept" class="text-slate-700">Engineer</span>
-                    <span>/</span>
-                    <span id="formBreadcrumbSubtopic" class="text-slate-900 font-semibold">DIECUT INSPECTION</span>
-                </div>
-                <!-- Realtime Auto Date / Time Badge -->
-                <div class="bg-slate-100 text-slate-700 px-3 py-1 rounded-lg text-xs font-medium flex items-center space-x-2 border border-slate-200">
-                    <i class="fa-regular fa-clock text-sky-600"></i>
-                    <span id="liveClockBadge">--/--/---- --:--:--</span>
-                </div>
+        <!-- STEP 3: Dynamic Form Submission View -->
+        <div id="viewForm" class="space-y-6 hidden max-w-3xl mx-auto">
+            <div class="flex items-center justify-between">
+                <button onclick="backToSubtopics()" class="px-3.5 py-2 bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 text-xs font-semibold rounded-xl transition flex items-center shadow-sm">
+                    <i class="fa-solid fa-arrow-left mr-1.5"></i>
+                    เปลี่ยนหัวข้อ
+                </button>
+                <div id="formTitleBadge" class="px-3 py-1 rounded-full text-xs font-bold"></div>
             </div>
 
-            <!-- Main Form Card -->
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden max-w-3xl mx-auto">
-                <div class="bg-slate-900 text-white px-6 py-4 flex items-center justify-between">
-                    <div>
-                        <h3 id="formTitleText" class="text-lg font-bold">แบบฟอร์มส่งงาน DIECUT INSPECTION</h3>
-                        <p class="text-xs text-slate-400 mt-0.5">กรุณากรอกข้อมูลให้ครบถ้วน ข้อมูลภาษาอังกฤษจะถูกแปลงเป็นตัวพิมพ์ใหญ่ให้อัตโนมัติ</p>
-                    </div>
-                    <span id="formDeptBadge" class="px-2.5 py-1 text-xs font-semibold bg-sky-500/20 text-sky-300 rounded-md border border-sky-500/30">Engineer</span>
-                </div>
-
-                <form id="userInspectionForm" onsubmit="handleUserFormSubmit(event)" class="p-6 space-y-5">
-                    <input type="hidden" id="inputDept" name="dept">
-                    <input type="hidden" id="inputSubtopic" name="subtopic">
-
-                    <!-- DYNAMIC FIELDS CONTAINER -->
-                    <div id="dynamicFormFields" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <!-- Fields populated dynamically via JS -->
+            <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 sm:p-8">
+                <form id="inspectionForm" onsubmit="handleFormSubmit(event)" class="space-y-6">
+                    <!-- Auto-generated Date / Time info bar -->
+                    <div class="grid grid-cols-2 gap-4 p-4 bg-slate-50 rounded-2xl border border-slate-100 text-xs">
+                        <div class="flex items-center space-x-2 text-slate-600">
+                            <i class="fa-regular fa-calendar text-sky-600"></i>
+                            <span>วันที่ส่ง: <strong id="autoDateDisplay" class="text-slate-900">-</strong></span>
+                        </div>
+                        <div class="flex items-center space-x-2 text-slate-600">
+                            <i class="fa-regular fa-clock text-sky-600"></i>
+                            <span>เวลาส่ง: <strong id="autoTimeDisplay" class="text-slate-900">-</strong></span>
+                        </div>
                     </div>
 
-                    <!-- Submit Button Bar -->
-                    <div class="pt-4 border-t border-slate-100 flex items-center justify-end space-x-3">
-                        <button type="button" onclick="showView('viewUserSubtopicSelect')" class="px-4 py-2 border border-slate-300 rounded-lg text-sm font-semibold text-slate-700 bg-white hover:bg-slate-50">
-                            ยกเลิก
-                        </button>
-                        <button type="submit" class="px-6 py-2 bg-sky-600 hover:bg-sky-700 text-white rounded-lg text-sm font-semibold shadow-md shadow-sky-500/20 transition flex items-center space-x-2">
-                            <i class="fa-solid fa-paper-plane"></i>
-                            <span>บันทึกข้อมูล</span>
+                    <!-- Dynamic Form Fields Container -->
+                    <div id="formFieldsContainer" class="space-y-4">
+                        <!-- Injected via JS -->
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="pt-4 border-t border-slate-100 flex justify-end">
+                        <button type="submit" id="submitBtn" class="w-full sm:w-auto px-6 py-3 bg-sky-600 hover:bg-sky-700 text-white font-bold rounded-xl shadow-lg shadow-sky-600/30 transition flex items-center justify-center text-xs uppercase tracking-wider">
+                            <i class="fa-solid fa-paper-plane mr-2"></i>
+                            บันทึกข้อมูลและส่งตรวจสอบ
                         </button>
                     </div>
                 </form>
             </div>
-        </section>
+        </div>
 
-        <!-- VIEW 4: ADMIN DASHBOARD VIEW -->
-        <section id="viewAdminDashboard" class="space-y-6 hidden">
+        <!-- STEP 4: Admin Dashboard View -->
+        <div id="viewAdminDashboard" class="space-y-6 hidden">
             <!-- Admin Bar Header -->
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
                 <div>
@@ -235,156 +190,108 @@
                     <p class="text-xs text-slate-500">ระบบตรวจสอบภาพรวมของงาน Filter และอัปเดตผลการตรวจคุณภาพ</p>
                 </div>
                 <div class="flex items-center space-x-2">
-                    <button onclick="refreshDashboardData()" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg transition flex items-center">
+                    <button onclick="exportToCSV()" class="px-3 py-1.5 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 text-xs font-semibold rounded-lg transition border border-emerald-200 flex items-center shadow-sm">
+                        <i class="fa-solid fa-file-csv mr-1.5"></i>
+                        Export CSV
+                    </button>
+                    <button onclick="refreshDashboardData()" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg transition flex items-center shadow-sm">
                         <i class="fa-solid fa-arrows-rotate mr-1.5 text-slate-500"></i>
                         รีเฟรชข้อมูล
                     </button>
-                    <button onclick="handleAdminLogout()" class="px-3 py-1.5 bg-rose-50 text-rose-700 hover:bg-rose-100 text-xs font-semibold rounded-lg transition border border-rose-200">
+                    <button onclick="handleAdminLogout()" class="px-3 py-1.5 bg-rose-50 text-rose-700 hover:bg-rose-100 text-xs font-semibold rounded-lg transition border border-rose-200 shadow-sm">
                         <i class="fa-solid fa-right-from-bracket mr-1.5"></i>
                         ออกจากระบบ
                     </button>
                 </div>
             </div>
 
-            <!-- KPI SUMMARY CARDS -->
-            <div class="grid grid-cols-2 md:grid-cols-5 gap-3 sm:gap-4">
-                <!-- Total Jobs -->
-                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm hover:border-slate-300 transition">
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs font-medium text-slate-500">งานทั้งหมด</span>
-                        <span class="w-7 h-7 rounded-lg bg-slate-100 text-slate-600 flex items-center justify-center text-xs"><i class="fa-solid fa-list-check"></i></span>
-                    </div>
-                    <p id="kpiTotal" class="text-2xl font-black text-slate-900 mt-2">0</p>
+            <!-- KPI Summary Cards -->
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+                <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+                    <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">งานทั้งหมด</p>
+                    <h3 class="text-2xl font-extrabold text-slate-900 mt-1" id="kpiTotal">0</h3>
                 </div>
-
-                <!-- Pending Inspection -->
-                <div class="bg-white p-4 rounded-xl border border-amber-200 bg-amber-50/30 shadow-sm hover:border-amber-300 transition">
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs font-semibold text-amber-700">รอตรวจสอบ</span>
-                        <span class="w-7 h-7 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center text-xs"><i class="fa-solid fa-hourglass-half"></i></span>
-                    </div>
-                    <p id="kpiPending" class="text-2xl font-black text-amber-700 mt-2">0</p>
+                <div class="bg-white p-4 rounded-2xl border border-amber-100 shadow-sm bg-gradient-to-br from-amber-50/50 to-white">
+                    <p class="text-[11px] font-bold text-amber-600 uppercase tracking-wider">รอตรวจสอบ</p>
+                    <h3 class="text-2xl font-extrabold text-amber-600 mt-1" id="kpiPending">0</h3>
                 </div>
-
-                <!-- Completed Inspection -->
-                <div class="bg-white p-4 rounded-xl border border-sky-200 bg-sky-50/30 shadow-sm hover:border-sky-300 transition">
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs font-semibold text-sky-700">ตรวจแล้ว</span>
-                        <span class="w-7 h-7 rounded-lg bg-sky-100 text-sky-700 flex items-center justify-center text-xs"><i class="fa-solid fa-circle-check"></i></span>
-                    </div>
-                    <p id="kpiCompleted" class="text-2xl font-black text-sky-700 mt-2">0</p>
+                <div class="bg-white p-4 rounded-2xl border border-sky-100 shadow-sm bg-gradient-to-br from-sky-50/50 to-white">
+                    <p class="text-[11px] font-bold text-sky-600 uppercase tracking-wider">ตรวจแล้ว</p>
+                    <h3 class="text-2xl font-extrabold text-sky-600 mt-1" id="kpiCompleted">0</h3>
                 </div>
-
-                <!-- Result OK -->
-                <div class="bg-white p-4 rounded-xl border border-emerald-200 bg-emerald-50/30 shadow-sm hover:border-emerald-300 transition">
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs font-semibold text-emerald-700">ผล OK</span>
-                        <span class="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center text-xs"><i class="fa-solid fa-thumbs-up"></i></span>
-                    </div>
-                    <p id="kpiOk" class="text-2xl font-black text-emerald-700 mt-2">0</p>
+                <div class="bg-white p-4 rounded-2xl border border-emerald-100 shadow-sm bg-gradient-to-br from-emerald-50/50 to-white">
+                    <p class="text-[11px] font-bold text-emerald-600 uppercase tracking-wider">ผล OK</p>
+                    <h3 class="text-2xl font-extrabold text-emerald-600 mt-1" id="kpiOk">0</h3>
                 </div>
-
-                <!-- Result NG -->
-                <div class="bg-white p-4 rounded-xl border border-rose-200 bg-rose-50/30 shadow-sm hover:border-rose-300 transition col-span-2 md:col-span-1">
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs font-semibold text-rose-700">ผล NG</span>
-                        <span class="w-7 h-7 rounded-lg bg-rose-100 text-rose-700 flex items-center justify-center text-xs"><i class="fa-solid fa-triangle-exclamation"></i></span>
-                    </div>
-                    <p id="kpiNg" class="text-2xl font-black text-rose-700 mt-2">0</p>
+                <div class="bg-white p-4 rounded-2xl border border-rose-100 shadow-sm bg-gradient-to-br from-rose-50/50 to-white col-span-2 sm:col-span-1">
+                    <p class="text-[11px] font-bold text-rose-600 uppercase tracking-wider">ผล NG</p>
+                    <h3 class="text-2xl font-extrabold text-rose-600 mt-1" id="kpiNg">0</h3>
                 </div>
             </div>
 
-            <!-- FILTER CONTROLS BAR -->
-            <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-3">
-                <div class="flex items-center justify-between">
-                    <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center">
-                        <i class="fa-solid fa-filter mr-1.5 text-sky-600"></i> Filter กรองข้อมูล
-                    </h3>
-                    <button onclick="resetFilters()" class="text-xs text-sky-600 hover:text-sky-800 font-semibold">
-                        ล้างตัวกรองทั้งหมด
-                    </button>
-                </div>
-
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
-                    <!-- Filter: แผนก -->
+            <!-- Filter Section -->
+            <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 text-xs">
                     <div>
-                        <label class="block text-xs font-semibold text-slate-600 mb-1">แผนก</label>
-                        <select id="filterDept" onchange="onFilterDeptChange()" class="w-full text-xs rounded-lg border-slate-300 focus:ring-sky-500 focus:border-sky-500 p-2 border">
-                            <option value="">ทั้งหมด (All)</option>
+                        <label class="block font-semibold text-slate-600 mb-1">แผนก</label>
+                        <select id="filterDept" onchange="onFilterDeptChange()" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 focus:ring-2 focus:ring-sky-500 outline-none">
+                            <option value="ALL">ทั้งหมด</option>
                             <option value="Engineer">Engineer</option>
                             <option value="Production">Production</option>
                         </select>
                     </div>
-
-                    <!-- Filter: หัวข้อย่อย (Dynamic relative to Department) -->
                     <div>
-                        <label class="block text-xs font-semibold text-slate-600 mb-1">หัวข้อย่อย</label>
-                        <select id="filterSubtopic" onchange="applyFilters()" class="w-full text-xs rounded-lg border-slate-300 focus:ring-sky-500 focus:border-sky-500 p-2 border">
-                            <option value="">ทั้งหมด (All)</option>
+                        <label class="block font-semibold text-slate-600 mb-1">หัวข้อย่อย</label>
+                        <select id="filterSubtopic" onchange="applyFilters()" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 focus:ring-2 focus:ring-sky-500 outline-none">
+                            <option value="ALL">ทั้งหมด</option>
                             <option value="DIECUT INSPECTION">DIECUT INSPECTION</option>
                             <option value="JIG FA">JIG FA</option>
                             <option value="FIRST SHOT FA">FIRST SHOT FA</option>
                             <option value="FA FG">FA FG</option>
                         </select>
                     </div>
-
-                    <!-- Filter: สถานะ / ผลตรวจ -->
                     <div>
-                        <label class="block text-xs font-semibold text-slate-600 mb-1">ผลการตรวจสอบ</label>
-                        <select id="filterStatus" onchange="applyFilters()" class="w-full text-xs rounded-lg border-slate-300 focus:ring-sky-500 focus:border-sky-500 p-2 border">
-                            <option value="">ทั้งหมด (All)</option>
+                        <label class="block font-semibold text-slate-600 mb-1">ผลการตรวจสอบ / สถานะ</label>
+                        <select id="filterStatus" onchange="applyFilters()" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 focus:ring-2 focus:ring-sky-500 outline-none">
+                            <option value="ALL">ทั้งหมด</option>
                             <option value="รอตรวจสอบ">รอตรวจสอบ</option>
                             <option value="OK">OK</option>
                             <option value="NG">NG</option>
                         </select>
                     </div>
-
-                    <!-- Filter: CUSTOMER -->
                     <div>
-                        <label class="block text-xs font-semibold text-slate-600 mb-1">Customer</label>
-                        <select id="filterCustomer" onchange="applyFilters()" class="w-full text-xs rounded-lg border-slate-300 focus:ring-sky-500 focus:border-sky-500 p-2 border">
-                            <option value="">ทั้งหมด (All)</option>
-                            <!-- Options filled dynamically -->
+                        <label class="block font-semibold text-slate-600 mb-1">Customer</label>
+                        <select id="filterCustomer" onchange="applyFilters()" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 focus:ring-2 focus:ring-sky-500 outline-none">
+                            <option value="ALL">ทั้งหมด</option>
                         </select>
                     </div>
-
-                    <!-- Filter: Search Part / ID -->
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-600 mb-1">ค้นหา (Part No / FA No)</label>
-                        <input type="text" id="filterSearch" oninput="applyFilters()" placeholder="พิมพ์ค้นหา..." class="w-full text-xs rounded-lg border-slate-300 focus:ring-sky-500 focus:border-sky-500 p-2 border">
+                    <div class="flex items-end">
+                        <button onclick="resetFilters()" class="w-full px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl transition flex items-center justify-center">
+                            <i class="fa-solid fa-rotate-right mr-1.5"></i> ล้างตัวกรอง
+                        </button>
                     </div>
-                </div>
-
-                <!-- Date Range Filters -->
-                <div class="flex flex-wrap items-center gap-3 pt-2 border-t border-slate-100 text-xs">
-                    <span class="font-semibold text-slate-600">ช่วงวันที่ส่งงาน:</span>
-                    <input type="date" id="filterStartDate" onchange="applyFilters()" class="rounded-lg border-slate-300 text-xs p-1.5 border">
-                    <span>ถึง</span>
-                    <input type="date" id="filterEndDate" onchange="applyFilters()" class="rounded-lg border-slate-300 text-xs p-1.5 border">
                 </div>
             </div>
 
-            <!-- DATA TABLE CARD -->
+            <!-- Data Table Container -->
             <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-                <div class="px-5 py-4 border-b border-slate-200 flex items-center justify-between">
-                    <h3 class="font-bold text-slate-900 text-sm flex items-center">
-                        <i class="fa-solid fa-table-list mr-2 text-sky-600"></i>
-                        รายการงานในระบบ (<span id="tableRecordCount">0</span> รายการ)
-                    </h3>
+                <div class="p-4 border-b border-slate-200 bg-slate-50/50 flex items-center justify-between text-xs">
+                    <span class="font-bold text-slate-700">รายการงานทั้งหมด (<span id="tableRecordCount">0</span>)</span>
+                    <span class="text-slate-400">คลิกที่แถวหรือปุ่ม "ตรวจงาน" เพื่อบันทึกผลตรวจสอบ</span>
                 </div>
-
+                
                 <div class="overflow-x-auto custom-scrollbar">
                     <table class="w-full text-left border-collapse text-xs">
                         <thead>
                             <tr class="bg-slate-50 text-slate-600 font-bold border-b border-slate-200">
-                                <th class="p-3">วันที่/เวลาส่ง</th>
-                                <th class="p-3">แผนก</th>
-                                <th class="p-3">หัวข้อย่อย</th>
-                                <th class="p-3">FA NO. / DIECUT NO.</th>
-                                <th class="p-3">CUSTOMER</th>
-                                <th class="p-3">PART NO.</th>
-                                <th class="p-3">ผู้ส่งงาน</th>
-                                <th class="p-3 text-center">สถานะ/ผลตรวจ</th>
+                                <th class="p-3 cursor-pointer hover:bg-slate-100 transition-colors select-none group" onclick="sortData('userDate')">วันที่/เวลาส่ง <i class="fa-solid fa-sort ml-1 text-slate-300 group-hover:text-slate-500 text-[10px]"></i></th>
+                                <th class="p-3 cursor-pointer hover:bg-slate-100 transition-colors select-none group" onclick="sortData('dept')">แผนก <i class="fa-solid fa-sort ml-1 text-slate-300 group-hover:text-slate-500 text-[10px]"></i></th>
+                                <th class="p-3 cursor-pointer hover:bg-slate-100 transition-colors select-none group" onclick="sortData('subtopic')">หัวข้อย่อย <i class="fa-solid fa-sort ml-1 text-slate-300 group-hover:text-slate-500 text-[10px]"></i></th>
+                                <th class="p-3 cursor-pointer hover:bg-slate-100 transition-colors select-none group" onclick="sortData('faNo')">FA NO. / DIECUT NO. <i class="fa-solid fa-sort ml-1 text-slate-300 group-hover:text-slate-500 text-[10px]"></i></th>
+                                <th class="p-3 cursor-pointer hover:bg-slate-100 transition-colors select-none group" onclick="sortData('customer')">CUSTOMER <i class="fa-solid fa-sort ml-1 text-slate-300 group-hover:text-slate-500 text-[10px]"></i></th>
+                                <th class="p-3 cursor-pointer hover:bg-slate-100 transition-colors select-none group" onclick="sortData('partNo')">PART NO. <i class="fa-solid fa-sort ml-1 text-slate-300 group-hover:text-slate-500 text-[10px]"></i></th>
+                                <th class="p-3 cursor-pointer hover:bg-slate-100 transition-colors select-none group" onclick="sortData('sender')">ผู้ส่งงาน <i class="fa-solid fa-sort ml-1 text-slate-300 group-hover:text-slate-500 text-[10px]"></i></th>
+                                <th class="p-3 text-center cursor-pointer hover:bg-slate-100 transition-colors select-none group" onclick="sortData('status')">สถานะ/ผลตรวจ <i class="fa-solid fa-sort ml-1 text-slate-300 group-hover:text-slate-500 text-[10px]"></i></th>
                                 <th class="p-3 text-center">Action</th>
                             </tr>
                         </thead>
@@ -394,138 +301,121 @@
                     </table>
                 </div>
 
-                <!-- Empty State Message -->
-                <div id="tableEmptyState" class="p-8 text-center hidden">
-                    <div class="w-12 h-12 bg-slate-100 text-slate-400 rounded-full flex items-center justify-center mx-auto mb-3">
-                        <i class="fa-solid fa-folder-open text-xl"></i>
+                <!-- Pagination Controls -->
+                <div id="paginationContainer" class="px-5 py-3 border-t border-slate-200 flex items-center justify-between bg-slate-50/50 hidden">
+                    <div class="text-xs text-slate-500">
+                        แสดง <span id="pageStartItem" class="font-bold text-slate-700">0</span> - <span id="pageEndItem" class="font-bold text-slate-700">0</span> จาก <span id="pageTotalItems" class="font-bold text-slate-700">0</span> รายการ
                     </div>
-                    <p class="text-sm font-semibold text-slate-700">ไม่พบข้อมูลงานตรงตามเงื่อนไขที่เลือก</p>
-                    <p class="text-xs text-slate-400 mt-1">ลองปรับเปลี่ยนตัวกรอง หรือค้นหาใหม่อีกครั้ง</p>
+                    <div class="flex items-center space-x-1" id="paginationControls">
+                        <!-- Pagination buttons injected here -->
+                    </div>
+                </div>
+
+                <!-- Empty State Message -->
+                <div id="tableEmptyState" class="p-12 text-center hidden">
+                    <i class="fa-solid fa-folder-open text-3xl text-slate-300 mb-2"></i>
+                    <p class="text-sm font-semibold text-slate-600">ไม่พบรายการข้อมูลที่ตรงกับเงื่อนไข</p>
                 </div>
             </div>
-        </section>
+        </div>
 
     </main>
 
-    <!-- MODAL 1: ADMIN LOGIN -->
-    <div id="modalAdminLogin" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
-        <div class="bg-white rounded-2xl shadow-2xl border border-slate-100 max-w-sm w-full overflow-hidden">
-            <div class="bg-slate-900 px-6 py-4 text-white flex items-center justify-between">
-                <div class="flex items-center space-x-2">
-                    <i class="fa-solid fa-shield-halved text-sky-400"></i>
-                    <h3 class="font-bold text-sm">Admin Access Login</h3>
+    <!-- Admin Login Modal -->
+    <div id="adminLoginModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl max-w-md w-full p-8 shadow-2xl border border-slate-100 space-y-6 relative animate-in">
+            <div class="text-center space-y-1">
+                <div class="w-12 h-12 bg-sky-50 text-sky-600 rounded-2xl mx-auto flex items-center justify-center text-xl mb-3">
+                    <i class="fa-solid fa-lock"></i>
                 </div>
-                <button onclick="closeModal('modalAdminLogin')" class="text-slate-400 hover:text-white text-lg">&times;</button>
+                <h3 class="text-xl font-extrabold text-slate-900">Admin Login</h3>
+                <p class="text-xs text-slate-500">กรุณาเข้าสู่ระบบเพื่อจัดการและตรวจสอบข้อมูล</p>
             </div>
 
-            <form onsubmit="handleAdminLoginSubmit(event)" class="p-6 space-y-4">
+            <form onsubmit="handleAdminLogin(event)" class="space-y-4 text-xs">
                 <div>
-                    <label class="block text-xs font-semibold text-slate-700 mb-1">Username</label>
-                    <div class="relative">
-                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400 text-xs"><i class="fa-solid fa-user"></i></span>
-                        <input type="text" id="loginUsername" required placeholder="admin" class="w-full pl-9 pr-3 py-2 border border-slate-300 rounded-lg text-xs focus:ring-sky-500 focus:border-sky-500">
-                    </div>
+                    <label class="block font-semibold text-slate-600 mb-1">Username</label>
+                    <input type="text" id="adminUser" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-sky-500 outline-none" placeholder="admin">
                 </div>
-
                 <div>
-                    <label class="block text-xs font-semibold text-slate-700 mb-1">Password</label>
-                    <div class="relative">
-                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400 text-xs"><i class="fa-solid fa-lock"></i></span>
-                        <input type="password" id="loginPassword" required placeholder="••••••••" class="w-full pl-9 pr-3 py-2 border border-slate-300 rounded-lg text-xs focus:ring-sky-500 focus:border-sky-500">
-                    </div>
+                    <label class="block font-semibold text-slate-600 mb-1">Password</label>
+                    <input type="password" id="adminPass" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-sky-500 outline-none" placeholder="••••••••">
                 </div>
-
-                <div id="loginErrorMessage" class="text-xs text-rose-600 bg-rose-50 p-2 rounded-lg border border-rose-200 hidden font-medium"></div>
-
-                <button type="submit" class="w-full py-2.5 bg-sky-600 hover:bg-sky-700 text-white rounded-lg text-xs font-bold shadow-md shadow-sky-500/20 transition">
-                    เข้าสู่ระบบ Admin
-                </button>
+                <div class="pt-2 flex space-x-3">
+                    <button type="button" onclick="closeAdminLoginModal()" class="flex-1 px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition">ยกเลิก</button>
+                    <button type="submit" class="flex-1 px-4 py-2.5 bg-sky-600 hover:bg-sky-700 text-white font-bold rounded-xl transition shadow-lg shadow-sky-600/30">เข้าสู่ระบบ</button>
+                </div>
             </form>
         </div>
     </div>
 
-    <!-- MODAL 2: ADMIN INSPECTION & JOB DETAILS -->
-    <div id="modalAdminInspection" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4 overflow-y-auto">
-        <div class="bg-white rounded-2xl shadow-2xl border border-slate-100 max-w-2xl w-full overflow-hidden my-8">
-            <!-- Modal Header -->
-            <div class="bg-slate-900 px-6 py-4 text-white flex items-center justify-between">
+    <!-- Admin Inspection Modal -->
+    <div id="adminInspectionModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl border border-slate-100 space-y-6 max-h-[90vh] overflow-y-auto custom-scrollbar">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-4">
                 <div>
-                    <span id="modalJobBadge" class="text-xs px-2 py-0.5 rounded bg-sky-500 text-white font-bold">Engineer / DIECUT INSPECTION</span>
-                    <h3 id="modalJobTitle" class="text-base font-bold mt-1">รายละเอียดงาน: FA-123456</h3>
+                    <span id="modalRecordSubtopic" class="px-2.5 py-1 bg-sky-50 text-sky-700 rounded-lg text-[10px] font-bold uppercase">หัวข้อ</span>
+                    <h3 class="text-lg font-extrabold text-slate-900 mt-1">รายละเอียดและผลตรวจสอบคุณภาพ</h3>
                 </div>
-                <button onclick="closeModal('modalAdminInspection')" class="text-slate-400 hover:text-white text-xl">&times;</button>
+                <button onclick="closeAdminInspectionModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
             </div>
 
-            <div class="p-6 space-y-6 max-h-[80vh] overflow-y-auto custom-scrollbar">
-                
-                <!-- SECTION A: READ-ONLY USER SUBMISSION DETAILS -->
-                <div>
-                    <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center">
-                        <i class="fa-solid fa-file-lines mr-1.5 text-sky-600"></i> ข้อมูลที่ส่งมาจาก User
-                    </h4>
-                    <div id="modalUserDetailGrid" class="grid grid-cols-2 sm:grid-cols-3 gap-3 bg-slate-50 p-4 rounded-xl border border-slate-200 text-xs">
-                        <!-- Populated dynamically -->
-                    </div>
-                </div>
+            <!-- Read-only User Data Display -->
+            <div id="modalUserDataContent" class="grid grid-cols-2 sm:grid-cols-3 gap-3 bg-slate-50 p-4 rounded-2xl border border-slate-200 text-xs">
+                <!-- Injected -->
+            </div>
 
-                <!-- SECTION B: ADMIN INSPECTION FORM -->
-                <form id="adminInspectionForm" onsubmit="handleSaveInspectionResult(event)" class="border-t border-slate-200 pt-5 space-y-4">
-                    <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center">
-                        <i class="fa-solid fa-clipboard-check mr-1.5 text-emerald-600"></i> บันทึกผลการตรวจสอบ (Admin Only)
-                    </h4>
+            <!-- Admin Inspection Form -->
+            <form id="adminInspectForm" onsubmit="handleAdminInspectSubmit(event)" class="space-y-4 text-xs pt-2">
+                <input type="hidden" id="inspectRecordId">
+                <input type="hidden" id="inspectSheetName">
 
-                    <input type="hidden" id="modalHiddenJobId">
-                    <input type="hidden" id="modalHiddenSheetName">
-
-                    <!-- Inspection Result Buttons (OK / NG) -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-2">INSPECTION RESULT <span class="text-rose-500">*</span></label>
-                        <div class="grid grid-cols-2 gap-3">
-                            <label class="relative flex items-center justify-center p-3 border-2 rounded-xl cursor-pointer hover:bg-emerald-50 transition border-slate-200 has-[:checked]:border-emerald-500 has-[:checked]:bg-emerald-50/50">
-                                <input type="radio" name="modalInspectionResult" value="OK" required class="sr-only">
-                                <span class="font-bold text-emerald-700 text-sm flex items-center"><i class="fa-solid fa-circle-check mr-2"></i> OK (ผ่าน)</span>
-                            </label>
-                            <label class="relative flex items-center justify-center p-3 border-2 rounded-xl cursor-pointer hover:bg-rose-50 transition border-slate-200 has-[:checked]:border-rose-500 has-[:checked]:bg-rose-50/50">
-                                <input type="radio" name="modalInspectionResult" value="NG" required class="sr-only">
-                                <span class="font-bold text-rose-700 text-sm flex items-center"><i class="fa-solid fa-circle-xmark mr-2"></i> NG (ไม่ผ่าน)</span>
-                            </label>
-                        </div>
-                    </div>
-
-                    <!-- Inspector Dropdown -->
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">ผู้ตรวจสอบ (Inspector) <span class="text-rose-500">*</span></label>
-                        <select id="modalInspector" required class="w-full text-xs rounded-lg border-slate-300 focus:ring-sky-500 focus:border-sky-500 p-2.5 border">
-                            <option value="">-- เลือกผู้ตรวจสอบ --</option>
-                            <option value="QA Staff 1">QA Staff 1</option>
-                            <option value="QA Staff 2">QA Staff 2</option>
-                            <option value="QA Supervisor">QA Supervisor</option>
-                            <option value="QA Manager">QA Manager</option>
+                        <label class="block font-bold text-slate-700 mb-1.5">INSPECTION RESULT <span class="text-rose-500">*</span></label>
+                        <select id="inspectResult" required class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2.5 focus:ring-2 focus:ring-sky-500 outline-none font-bold">
+                            <option value="">-- เลือกผลการตรวจสอบ --</option>
+                            <option value="OK" class="text-emerald-600 font-bold">OK (ผ่านเกณฑ์)</option>
+                            <option value="NG" class="text-rose-600 font-bold">NG (ไม่ผ่านเกณฑ์)</option>
                         </select>
                     </div>
-
-                    <!-- Remark Text -->
                     <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">REMARK (หมายเหตุ)</label>
-                        <textarea id="modalRemark" rows="3" placeholder="ระบุรายละเอียดเพิ่มเติม หรือเหตุผลกรณี NG..." class="w-full text-xs rounded-lg border-slate-300 focus:ring-sky-500 focus:border-sky-500 p-2.5 border"></textarea>
+                        <label class="block font-bold text-slate-700 mb-1.5">ผู้ตรวจสอบ <span class="text-rose-500">*</span></label>
+                        <select id="inspectInspector" required class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2.5 focus:ring-2 focus:ring-sky-500 outline-none">
+                            <option value="">-- เลือกผู้ตรวจสอบ --</option>
+                            <option value="QA Inspector 1">QA Inspector 1</option>
+                            <option value="QA Inspector 2">QA Inspector 2</option>
+                            <option value="QA Supervisor">QA Supervisor</option>
+                        </select>
                     </div>
+                </div>
 
-                    <!-- Admin Form Submit Buttons -->
-                    <div class="pt-3 flex items-center justify-end space-x-3">
-                        <button type="button" onclick="closeModal('modalAdminInspection')" class="px-4 py-2 border border-slate-300 rounded-lg text-xs font-semibold text-slate-700 hover:bg-slate-50">
-                            ยกเลิก
-                        </button>
-                        <button type="submit" class="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold shadow-md shadow-emerald-500/20 transition flex items-center space-x-1.5">
-                            <i class="fa-solid fa-floppy-disk"></i>
-                            <span>บันทึกผลตรวจสอบ</span>
-                        </button>
-                    </div>
-                </form>
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1.5">REMARK (หมายเหตุ)</label>
+                    <textarea id="inspectRemark" rows="3" class="w-full bg-white border border-slate-300 rounded-xl p-3 focus:ring-2 focus:ring-sky-500 outline-none" placeholder="ระบุหมายเหตุหรือข้อเสนอแนะเพิ่มเติม (ถ้ามี)..."></textarea>
+                </div>
 
-            </div>
+                <div class="pt-4 border-t border-slate-100 flex justify-end space-x-3">
+                    <button type="button" onclick="closeAdminInspectionModal()" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition">ปิด</button>
+                    <button type="submit" id="adminSaveBtn" class="px-6 py-2.5 bg-sky-600 hover:bg-sky-700 text-white font-bold rounded-xl transition shadow-lg shadow-sky-600/30 flex items-center">
+                        <i class="fa-solid fa-floppy-disk mr-1.5"></i>
+                        บันทึกผลตรวจสอบ
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 py-4 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-400">
+            © 2026 AMS FA Quality Inspection System. All Rights Reserved.
+        </div>
+    </footer>
+
+    <!-- JavaScript Application Logic -->
     <script>
         // CONFIGURATION & GLOBAL STATE
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxdFtQbhEap6mHXiZOA6LqWcfpbjq2cfkjbkIy1fD3dqoiapIqeL5coVSsqzd4hrPnW5w/exec';
@@ -534,393 +424,402 @@
         let filteredRecords = [];
         let isAdminLoggedIn = false;
 
+        // Pagination & Sorting State
+        let currentPage = 1;
+        const rowsPerPage = 20;
+        let sortColumn = 'userDate';
+        let sortAscending = false; // false = descending (newest first)
+
         // MASTER DROPDOWN OPTIONS
-        const DROPDOWN_DATA = {
-            customers: ['CUSTOMER A', 'CUSTOMER B', 'CUSTOMER C', 'CUSTOMER D', 'AMS SPECIAL'],
-            referDiecuts: ['REF-001', 'REF-002', 'REF-003', 'REF-004'],
-            mouldSenders: ['วิศวกร Mould 1', 'วิศวกร Mould 2', 'ช่างพิมพ์ A'],
-            jigSenders: ['ช่าง JIG 1', 'ช่าง JIG 2', 'Engineer A'],
-            jobSenders: ['พนักงานผลิต 1', 'หัวหน้างาน Production', 'OP-01', 'OP-02'],
-            machines: {
-                'CDC': ['CDC1', 'CDC2', 'CDC3', 'CDC4'],
-                'PACKING': ['PACK1', 'PACK2']
-            }
-        };
+        const MASTER_CUSTOMERS = [
+            'DENSO', 'HONDA', 'TOYOTA', 'SONY', 'PANASONIC', 'CANON', 'NISSAN', 'MAZDA', 'MITSUBISHI', 'SUMITOMO', 'OTHER'
+        ];
+        const MASTER_MOULD_SENDERS = [
+            'Somchai M.', 'Prasert K.', 'Anan S.', 'Wichai B.', 'Narong P.'
+        ];
+        const MASTER_JIG_SENDERS = [
+            'Kanya W.', 'Somsak T.', 'Malee R.', 'Chatchai N.', 'Suwan D.'
+        ];
 
         // INITIALIZATION ON LOAD
         window.onload = function() {
-            startLiveClock();
+            navigateToHome();
             checkAdminSession();
-            // Automatically attempt fetching data or initialize
-            loadDashboardData();
         };
 
-        function startLiveClock() {
-            setInterval(() => {
-                const now = new Date();
-                const str = now.toLocaleDateString('th-TH') + ' ' + now.toLocaleTimeString('th-TH');
-                const badge = document.getElementById('liveClockBadge');
-                if (badge) badge.innerText = str;
-            }, 1000);
+        function showLoading(text = 'กำลังประมวลผล...') {
+            document.getElementById('loadingText').innerText = text;
+            document.getElementById('loadingOverlay').classList.remove('hidden');
         }
 
-        function showView(viewId) {
-            ['viewUserDeptSelect', 'viewUserSubtopicSelect', 'viewUserForm', 'viewAdminDashboard'].forEach(id => {
-                const el = document.getElementById(id);
-                if (el) el.classList.add('hidden');
-            });
-            const target = document.getElementById(viewId);
-            if (target) target.classList.remove('hidden');
-
-            // Scroll to top
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        function showLoader(text = 'กำลังประมวลผลข้อมูล...') {
-            document.getElementById('loaderText').innerText = text;
-            document.getElementById('globalLoader').classList.remove('hidden');
-        }
-
-        function hideLoader() {
-            document.getElementById('globalLoader').classList.add('hidden');
+        function hideLoading() {
+            document.getElementById('loadingOverlay').classList.add('hidden');
         }
 
         function showToast(message, type = 'success') {
             const container = document.getElementById('toastContainer');
             const toast = document.createElement('div');
             
-            const bgColor = type === 'success' ? 'bg-emerald-600' : (type === 'error' ? 'bg-rose-600' : 'bg-slate-800');
-            const icon = type === 'success' ? 'fa-circle-check' : (type === 'error' ? 'fa-triangle-exclamation' : 'fa-circle-info');
+            const bgClass = type === 'success' ? 'bg-emerald-600 text-white' : 'bg-rose-600 text-white';
+            const icon = type === 'success' ? 'fa-circle-check' : 'fa-circle-exclamation';
 
-            toast.className = `pointer-events-auto flex items-center space-x-2 text-white text-xs font-semibold px-4 py-3 rounded-xl shadow-xl transition-all duration-300 transform translate-y-2 opacity-0 ${bgColor}`;
-            toast.innerHTML = `<i class="fa-solid ${icon}"></i><span>${message}</span>`;
-
+            toast.className = `${bgClass} px-4 py-3 rounded-2xl shadow-xl flex items-center space-x-2 text-xs font-semibold pointer-events-auto transform translate-y-2 opacity-0 transition-all duration-300`;
+            toast.innerHTML = `<i class="fa-solid ${icon} text-sm"></i><span>${message}</span>`;
+            
             container.appendChild(toast);
-
             setTimeout(() => {
                 toast.classList.remove('translate-y-2', 'opacity-0');
             }, 10);
 
             setTimeout(() => {
-                toast.classList.add('opacity-0', 'translate-y-2');
-                setTimeout(() => toast.remove(), 300);
-            }, 4000);
+                toast.classList.add('translate-y-2', 'opacity-0');
+                setTimeout(() => container.removeChild(toast), 300);
+            }, 3500);
         }
 
+        // VIEW ROUTER
+        function navigateToHome() {
+            document.getElementById('viewDeptSelect').classList.remove('hidden');
+            document.getElementById('viewSubtopicSelect').classList.add('hidden');
+            document.getElementById('viewForm').classList.add('hidden');
+            document.getElementById('viewAdminDashboard').classList.add('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        let currentSelectedDept = '';
+
         function selectDepartment(dept) {
-            document.getElementById('breadcrumbDeptName').innerText = dept;
+            currentSelectedDept = dept;
+            document.getElementById('viewDeptSelect').classList.add('hidden');
+            document.getElementById('viewSubtopicSelect').classList.remove('hidden');
+            
+            const badge = document.getElementById('selectedDeptBadge');
+            badge.innerText = `แผนกที่เลือก: ${dept}`;
+            badge.className = dept === 'Engineer' 
+                ? 'px-3 py-1 bg-sky-100 text-sky-800 rounded-full text-xs font-bold'
+                : 'px-3 py-1 bg-emerald-100 text-emerald-800 rounded-full text-xs font-bold';
+
             const container = document.getElementById('subtopicCardsContainer');
             container.innerHTML = '';
 
+            let topics = [];
             if (dept === 'Engineer') {
-                container.innerHTML = `
-                    <button onclick="openUserForm('Engineer', 'DIECUT INSPECTION')" class="bg-white p-6 rounded-2xl border-2 border-slate-200 hover:border-sky-500 shadow-sm hover:shadow-lg transition text-left">
-                        <div class="w-10 h-10 rounded-lg bg-sky-100 text-sky-600 flex items-center justify-center font-bold mb-3"><i class="fa-solid fa-scissors"></i></div>
-                        <h4 class="font-bold text-slate-900 text-base">DIECUT INSPECTION</h4>
-                        <p class="text-xs text-slate-500 mt-1">การตรวจสอบไดคัท งานแม่พิมพ์วิศวกรรม</p>
-                    </button>
-                    <button onclick="openUserForm('Engineer', 'JIG FA')" class="bg-white p-6 rounded-2xl border-2 border-slate-200 hover:border-sky-500 shadow-sm hover:shadow-lg transition text-left">
-                        <div class="w-10 h-10 rounded-lg bg-sky-100 text-sky-600 flex items-center justify-center font-bold mb-3"><i class="fa-solid fa-compass-drafting"></i></div>
-                        <h4 class="font-bold text-slate-900 text-base">JIG FA</h4>
-                        <p class="text-xs text-slate-500 mt-1">การส่งตรวจสอบ JIG และอุปกรณ์จับยึด</p>
-                    </button>
-                `;
-            } else if (dept === 'Production') {
-                container.innerHTML = `
-                    <button onclick="openUserForm('Production', 'FIRST SHOT FA')" class="bg-white p-6 rounded-2xl border-2 border-slate-200 hover:border-emerald-500 shadow-sm hover:shadow-lg transition text-left">
-                        <div class="w-10 h-10 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold mb-3"><i class="fa-solid fa-play"></i></div>
-                        <h4 class="font-bold text-slate-900 text-base">FIRST SHOT FA</h4>
-                        <p class="text-xs text-slate-500 mt-1">ตรวจสอบชิ้นงานแรกของการผลิต First Shot</p>
-                    </button>
-                    <button onclick="openUserForm('Production', 'FA FG')" class="bg-white p-6 rounded-2xl border-2 border-slate-200 hover:border-emerald-500 shadow-sm hover:shadow-lg transition text-left">
-                        <div class="w-10 h-10 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold mb-3"><i class="fa-solid fa-box-check"></i></div>
-                        <h4 class="font-bold text-slate-900 text-base">FA FG</h4>
-                        <p class="text-xs text-slate-500 mt-1">ตรวจสอบชิ้นงานสำเร็จรูปก่อนส่งมอบ (Finished Goods)</p>
-                    </button>
-                `;
-            }
-
-            showView('viewUserSubtopicSelect');
-        }
-
-        function openUserForm(dept, subtopic) {
-            document.getElementById('inputDept').value = dept;
-            document.getElementById('inputSubtopic').value = subtopic;
-
-            document.getElementById('formBreadcrumbDept').innerText = dept;
-            document.getElementById('formBreadcrumbSubtopic').innerText = subtopic;
-            document.getElementById('formTitleText').innerText = `แบบฟอร์มส่งงาน ${subtopic}`;
-            document.getElementById('formDeptBadge').innerText = dept;
-
-            const fieldsContainer = document.getElementById('dynamicFormFields');
-            fieldsContainer.innerHTML = '';
-
-            const customerOptionsHtml = DROPDOWN_DATA.customers.map(c => `<option value="${c}">${c}</option>`).join('');
-
-            // 5.1 DIECUT INSPECTION
-            if (subtopic === 'DIECUT INSPECTION') {
-                const referOptionsHtml = DROPDOWN_DATA.referDiecuts.map(r => `<option value="${r}">${r}</option>`).join('');
-                const senderOptionsHtml = DROPDOWN_DATA.mouldSenders.map(s => `<option value="${s}">${s}</option>`).join('');
-
-                fieldsContainer.innerHTML = `
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">DIECUT NO <span class="text-rose-500">*</span></label>
-                        <input type="text" name="diecutNo" required oninput="this.value = this.value.toUpperCase()" placeholder="ตัวอย่าง: DC-1029" class="w-full text-xs rounded-lg border-slate-300 p-2.5 border">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">REFER NO DIECUT <span class="text-rose-500">*</span></label>
-                        <select name="referNoDiecut" required class="w-full text-xs rounded-lg border-slate-300 p-2.5 border">
-                            <option value="">-- เลือก REFER NO --</option>
-                            ${referOptionsHtml}
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">CUSTOMER <span class="text-rose-500">*</span></label>
-                        <select name="customer" required class="w-full text-xs rounded-lg border-slate-300 p-2.5 border">
-                            <option value="">-- เลือก CUSTOMER --</option>
-                            ${customerOptionsHtml}
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">PART NO <span class="text-rose-500">*</span></label>
-                        <input type="text" name="partNo" required oninput="this.value = this.value.toUpperCase()" placeholder="ตัวอย่าง: PT-8821A" class="w-full text-xs rounded-lg border-slate-300 p-2.5 border">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">REV. (ตัวเลขเท่านั้น) <span class="text-rose-500">*</span></label>
-                        <input type="number" name="rev" required min="0" placeholder="0" class="w-full text-xs rounded-lg border-slate-300 p-2.5 border">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">CAVITY (ตัวเลขเท่านั้น) <span class="text-rose-500">*</span></label>
-                        <input type="number" name="cavity" required min="1" placeholder="1" class="w-full text-xs rounded-lg border-slate-300 p-2.5 border">
-                    </div>
-                    <div class="md:col-span-2">
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">ผู้ส่ง MOULD <span class="text-rose-500">*</span></label>
-                        <select name="mouldSender" required class="w-full text-xs rounded-lg border-slate-300 p-2.5 border">
-                            <option value="">-- เลือกผู้ส่ง MOULD --</option>
-                            ${senderOptionsHtml}
-                        </select>
-                    </div>
-                `;
-            } 
-            // 5.2 JIG FA
-            else if (subtopic === 'JIG FA') {
-                const jigSenderOptionsHtml = DROPDOWN_DATA.jigSenders.map(s => `<option value="${s}">${s}</option>`).join('');
-
-                fieldsContainer.innerHTML = `
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">CUSTOMER <span class="text-rose-500">*</span></label>
-                        <select name="customer" required class="w-full text-xs rounded-lg border-slate-300 p-2.5 border">
-                            <option value="">-- เลือก CUSTOMER --</option>
-                            ${customerOptionsHtml}
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">PART NO <span class="text-rose-500">*</span></label>
-                        <input type="text" name="partNo" required oninput="this.value = this.value.toUpperCase()" placeholder="ตัวอย่าง: PT-9900" class="w-full text-xs rounded-lg border-slate-300 p-2.5 border">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">REV. (ตัวเลขเท่านั้น) <span class="text-rose-500">*</span></label>
-                        <input type="number" name="rev" required min="0" placeholder="0" class="w-full text-xs rounded-lg border-slate-300 p-2.5 border">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">จำนวน JIG ที่ส่งตรวจสอบ (ตัวเลขเท่านั้น) <span class="text-rose-500">*</span></label>
-                        <input type="number" name="jigQty" required min="1" placeholder="1" class="w-full text-xs rounded-lg border-slate-300 p-2.5 border">
-                    </div>
-                    <div class="md:col-span-2">
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">ชนิด JIG ที่ต้องการใช้งาน <span class="text-rose-500">*</span></label>
-                        <div class="flex flex-wrap gap-4 p-3 bg-slate-50 rounded-lg border border-slate-200">
-                            <label class="inline-flex items-center text-xs font-medium cursor-pointer">
-                                <input type="radio" name="jigType" value="วัด Dimension" required onchange="handleJigTypeChange(this)" class="text-sky-600 mr-2 focus:ring-sky-500"> วัด Dimension
-                            </label>
-                            <label class="inline-flex items-center text-xs font-medium cursor-pointer">
-                                <input type="radio" name="jigType" value="ติดกาว" required onchange="handleJigTypeChange(this)" class="text-sky-600 mr-2 focus:ring-sky-500"> ติดกาว
-                            </label>
-                            <label class="inline-flex items-center text-xs font-medium cursor-pointer">
-                                <input type="radio" name="jigType" value="อื่นๆ" required onchange="handleJigTypeChange(this)" class="text-sky-600 mr-2 focus:ring-sky-500"> อื่นๆ
-                            </label>
-                        </div>
-                    </div>
-                    <div id="jigTypeOtherContainer" class="md:col-span-2 hidden">
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">ระบุรายละเอียดชนิด JIG (อื่นๆ) <span class="text-rose-500">*</span></label>
-                        <input type="text" id="jigTypeDetailInput" name="jigTypeDetail" placeholder="ระบุรายละเอียด JIG ที่ต้องการใช้งาน..." class="w-full text-xs rounded-lg border-slate-300 p-2.5 border">
-                    </div>
-                    <div class="md:col-span-2">
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">ผู้ส่ง JIG <span class="text-rose-500">*</span></label>
-                        <select name="jigSender" required class="w-full text-xs rounded-lg border-slate-300 p-2.5 border">
-                            <option value="">-- เลือกผู้ส่ง JIG --</option>
-                            ${jigSenderOptionsHtml}
-                        </select>
-                    </div>
-                `;
-            }
-            // 6.1 FIRST SHOT FA
-            else if (subtopic === 'FIRST SHOT FA') {
-                fieldsContainer.innerHTML = `
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">FA NO. (รับตัวเลขและสัญลักษณ์ เช่น /) <span class="text-rose-500">*</span></label>
-                        <input type="text" name="faNo" required placeholder="ตัวอย่าง: FA-2026/01" class="w-full text-xs rounded-lg border-slate-300 p-2.5 border">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">CUSTOMER <span class="text-rose-500">*</span></label>
-                        <select name="customer" required class="w-full text-xs rounded-lg border-slate-300 p-2.5 border">
-                            <option value="">-- เลือก CUSTOMER --</option>
-                            ${customerOptionsHtml}
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">PART NO <span class="text-rose-500">*</span></label>
-                        <input type="text" name="partNo" required oninput="this.value = this.value.toUpperCase()" placeholder="ตัวอย่าง: PT-1102" class="w-full text-xs rounded-lg border-slate-300 p-2.5 border">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">REV. (ตัวเลขเท่านั้น) <span class="text-rose-500">*</span></label>
-                        <input type="number" name="rev" required min="0" placeholder="0" class="w-full text-xs rounded-lg border-slate-300 p-2.5 border">
-                    </div>
-                    <div class="md:col-span-2">
-                        <div class="flex items-center justify-between mb-1">
-                            <label class="block text-xs font-semibold text-slate-700">TOOLING REQUIRE</label>
-                            <button type="button" onclick="clearToolingRequire()" class="text-[11px] text-sky-600 hover:text-sky-800 font-medium underline">ล้างการเลือก</button>
-                        </div>
-                        <div class="flex flex-wrap gap-4 p-3 bg-slate-50 rounded-lg border border-slate-200">
-                            <label class="inline-flex items-center text-xs font-medium cursor-pointer"><input type="radio" name="toolingRequire" value="TOOLING" onchange="handleToolingRequireChange(this)" class="text-sky-600 mr-2 focus:ring-sky-500"> TOOLING</label>
-                            <label class="inline-flex items-center text-xs font-medium cursor-pointer"><input type="radio" name="toolingRequire" value="LASER" onchange="handleToolingRequireChange(this)" class="text-sky-600 mr-2 focus:ring-sky-500"> LASER</label>
-                            <label class="inline-flex items-center text-xs font-medium cursor-pointer"><input type="radio" name="toolingRequire" value="CDC" onchange="handleToolingRequireChange(this)" class="text-sky-600 mr-2 focus:ring-sky-500"> CDC</label>
-                            <label class="inline-flex items-center text-xs font-medium cursor-pointer"><input type="radio" name="toolingRequire" value="V-CUT" onchange="handleToolingRequireChange(this)" class="text-sky-600 mr-2 focus:ring-sky-500"> V-CUT</label>
-                        </div>
-                    </div>
-                    <!-- Cascading Machine Selection -->
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">กลุ่มเครื่องผลิต <span class="text-rose-500">*</span></label>
-                        <select id="machineCategory" onchange="handleMachineCategoryChange(this)" required class="w-full text-xs rounded-lg border-slate-300 p-2.5 border">
-                            <option value="">-- เลือกกลุ่มเครื่อง --</option>
-                            <option value="CDC">CDC</option>
-                            <option value="PACKING">PACKING</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">เครื่องที่ผลิต <span class="text-rose-500">*</span></label>
-                        <select id="machineSelect" name="machine" required disabled class="w-full text-xs rounded-lg border-slate-300 p-2.5 border bg-slate-50 disabled:bg-slate-100 disabled:text-slate-400">
-                            <option value="">-- กรุณาเลือกกลุ่มเครื่องก่อน --</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">PACK</label>
-                        <div class="p-2.5 bg-slate-50 rounded-lg border border-slate-200 flex items-center">
-                            <label class="inline-flex items-center text-xs font-semibold cursor-pointer">
-                                <input type="checkbox" name="pack" value="true" id="packCheckbox" onchange="handlePackChange(this)" class="rounded text-sky-600 mr-2">
-                                <span>PACK ชิ้นงานแล้ว</span>
-                            </label>
-                        </div>
-                    </div>
-                    <div class="md:col-span-2">
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">จำนวนที่ส่ง (แบ่งเป็น 2 ช่อง: จำนวนหลัก + จำนวนเพิ่มเติม)</label>
-                        <div class="flex items-center space-x-2">
-                            <input type="number" name="mainQty" required min="1" placeholder="จำนวนหลัก (เช่น 5000)" class="w-1/2 text-xs rounded-lg border-slate-300 p-2.5 border">
-                            <span class="text-slate-400 font-bold">+</span>
-                            <input type="number" name="extraQty" min="0" placeholder="จำนวนเพิ่มเติม (เช่น 2) ถ้าไม่มีเว้นว่างได้" class="w-1/2 text-xs rounded-lg border-slate-300 p-2.5 border">
-                        </div>
-                    </div>
-                    <div class="md:col-span-2">
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">ผู้ส่งงาน <span class="text-rose-500">*</span></label>
-                        <input type="text" name="jobSender" required placeholder="ระบุชื่อผู้ส่งงาน..." class="w-full text-xs rounded-lg border-slate-300 p-2.5 border">
-                    </div>
-                `;
-            }
-            // 6.2 FA FG
-            else if (subtopic === 'FA FG') {
-                fieldsContainer.innerHTML = `
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">FA NO. (รับตัวเลขและสัญลักษณ์ เช่น /) <span class="text-rose-500">*</span></label>
-                        <input type="text" name="faNo" required placeholder="ตัวอย่าง: FG-2026/08" class="w-full text-xs rounded-lg border-slate-300 p-2.5 border">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">CUSTOMER <span class="text-rose-500">*</span></label>
-                        <select name="customer" required class="w-full text-xs rounded-lg border-slate-300 p-2.5 border">
-                            <option value="">-- เลือก CUSTOMER --</option>
-                            ${customerOptionsHtml}
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">PART NO <span class="text-rose-500">*</span></label>
-                        <input type="text" name="partNo" required oninput="this.value = this.value.toUpperCase()" placeholder="ตัวอย่าง: PT-701A" class="w-full text-xs rounded-lg border-slate-300 p-2.5 border">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">REV. (ตัวเลขเท่านั้น) <span class="text-rose-500">*</span></label>
-                        <input type="number" name="rev" required min="0" placeholder="0" class="w-full text-xs rounded-lg border-slate-300 p-2.5 border">
-                    </div>
-                    <div class="md:col-span-2">
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">จำนวนงานที่ส่ง (แบ่งเป็น 2 ช่อง: จำนวนหลัก + จำนวนเพิ่มเติม)</label>
-                        <div class="flex items-center space-x-2">
-                            <input type="number" name="mainQty" required min="1" placeholder="จำนวนหลัก (เช่น 5000)" class="w-1/2 text-xs rounded-lg border-slate-300 p-2.5 border">
-                            <span class="text-slate-400 font-bold">+</span>
-                            <input type="number" name="extraQty" min="0" placeholder="จำนวนเพิ่มเติม (เช่น 2) ถ้าไม่มีเว้นว่างได้" class="w-1/2 text-xs rounded-lg border-slate-300 p-2.5 border">
-                        </div>
-                    </div>
-                    <div class="md:col-span-2">
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">ผู้ส่งงาน <span class="text-rose-500">*</span></label>
-                        <input type="text" name="jobSender" required placeholder="ระบุชื่อผู้ส่งงาน..." class="w-full text-xs rounded-lg border-slate-300 p-2.5 border">
-                    </div>
-                `;
-            }
-
-            showView('viewUserForm');
-        }
-
-        function handleJigTypeChange(selectEl) {
-            const container = document.getElementById('jigTypeOtherContainer');
-            const detailInput = document.getElementById('jigTypeDetailInput');
-            if (selectEl.value === 'อื่นๆ') {
-                container.classList.remove('hidden');
-                detailInput.setAttribute('required', 'required');
+                topics = [
+                    { id: 'DIECUT INSPECTION', title: 'DIECUT INSPECTION', desc: 'ตรวจสอบแม่พิมพ์ Diecut พร้อมรายละเอียด Cavity และ Mould Sender', icon: 'fa-scissors', color: 'sky' },
+                    { id: 'JIG FA', title: 'JIG FA', desc: 'ตรวจสอบอุปกรณ์ JIG พร้อมเลือกชนิด Jig และระบุรายละเอียด', icon: 'fa-screwdriver-wrench', color: 'sky' }
+                ];
             } else {
-                container.classList.add('hidden');
-                detailInput.removeAttribute('required');
+                topics = [
+                    { id: 'FIRST SHOT FA', title: 'FIRST SHOT FA', desc: 'ตรวจสอบงานช็อตแรก พร้อมเลือก Tooling Require และเครื่องผลิต', icon: 'fa-fire', color: 'emerald' },
+                    { id: 'FA FG', title: 'FA FG', desc: 'ตรวจสอบงานสำเร็จรูป (FG) ระบุจำนวนหลักและจำนวนเพิ่มเติม', icon: 'fa-box-archive', color: 'emerald' }
+                ];
+            }
+
+            topics.forEach(t => {
+                const card = document.createElement('div');
+                card.onclick = () => openForm(t.id);
+                card.className = `bg-white rounded-3xl p-6 border border-slate-200/80 shadow-sm hover:shadow-xl hover:border-${t.color}-500 transition-all duration-300 cursor-pointer flex items-center justify-between group`;
+                card.innerHTML = `
+                    <div class="flex items-center space-x-4">
+                        <div class="w-12 h-12 bg-${t.color}-50 text-${t.color}-600 rounded-2xl flex items-center justify-center text-xl group-hover:scale-110 transition-transform">
+                            <i class="fa-solid ${t.icon}"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-lg font-bold text-slate-900">${t.title}</h4>
+                            <p class="text-xs text-slate-500 mt-0.5">${t.desc}</p>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-slate-300 group-hover:text-${t.color}-600 group-hover:translate-x-1 transition-all"></i>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function backToSubtopics() {
+            selectDepartment(currentSelectedDept);
+        }
+
+        let currentActiveSubtopic = '';
+
+        function openForm(subtopic) {
+            currentActiveSubtopic = subtopic;
+            document.getElementById('viewSubtopicSelect').classList.add('hidden');
+            document.getElementById('viewForm').classList.remove('hidden');
+
+            const badge = document.getElementById('formTitleBadge');
+            badge.innerText = subtopic;
+            badge.className = 'px-3 py-1 bg-sky-100 text-sky-800 rounded-full text-xs font-bold';
+
+            // Set Current Date & Time
+            const now = new Date();
+            const dateStr = String(now.getDate()).padStart(2, '0') + '/' + String(now.getMonth() + 1).padStart(2, '0') + '/' + now.getFullYear();
+            const timeStr = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0') + ':' + String(now.getSeconds()).padStart(2, '0');
+            
+            document.getElementById('autoDateDisplay').innerText = dateStr;
+            document.getElementById('autoTimeDisplay').innerText = timeStr;
+
+            renderFormFields(subtopic);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function renderFormFields(subtopic) {
+            const container = document.getElementById('formFieldsContainer');
+            container.innerHTML = '';
+
+            const customerOptions = MASTER_CUSTOMERS.map(c => `<option value="${c}">${c}</option>`).join('');
+
+            if (subtopic === 'DIECUT INSPECTION') {
+                container.innerHTML = `
+                    <div>
+                        <label class="block font-bold text-slate-700 text-xs mb-1.5">DIECUT NO. <span class="text-rose-500">*</span></label>
+                        <input type="text" id="field_diecutNo" required oninput="this.value = this.value.toUpperCase()" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs focus:ring-2 focus:ring-sky-500 outline-none uppercase font-bold" placeholder="ระบุเลข Diecut...">
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 text-xs mb-1.5">REFER NO DIECUT</label>
+                        <select id="field_referNoDiecut" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs focus:ring-2 focus:ring-sky-500 outline-none">
+                            <option value="REF-A">REF-A (มาตรฐาน)</option>
+                            <option value="REF-B">REF-B (พิเศษ)</option>
+                            <option value="REF-C">REF-C (ทดสอบ)</option>
+                        </select>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block font-bold text-slate-700 text-xs mb-1.5">CUSTOMER <span class="text-rose-500">*</span></label>
+                            <select id="field_customer" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs focus:ring-2 focus:ring-sky-500 outline-none">
+                                <option value="">-- เลือก Customer --</option>
+                                ${customerOptions}
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block font-bold text-slate-700 text-xs mb-1.5">PART NO. <span class="text-rose-500">*</span></label>
+                            <input type="text" id="field_partNo" required oninput="this.value = this.value.toUpperCase()" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs focus:ring-2 focus:ring-sky-500 outline-none uppercase font-bold" placeholder="ระบุ Part No...">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block font-bold text-slate-700 text-xs mb-1.5">REV. (ตัวเลขเท่านั้น) <span class="text-rose-500">*</span></label>
+                            <input type="number" id="field_rev" required min="0" value="0" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs focus:ring-2 focus:ring-sky-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block font-bold text-slate-700 text-xs mb-1.5">CAVITY (ตัวเลขเท่านั้น) <span class="text-rose-500">*</span></label>
+                            <input type="number" id="field_cavity" required min="1" value="1" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs focus:ring-2 focus:ring-sky-500 outline-none">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 text-xs mb-1.5">ผู้ส่ง MOULD <span class="text-rose-500">*</span></label>
+                        <select id="field_mouldSender" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs focus:ring-2 focus:ring-sky-500 outline-none">
+                            <option value="">-- เลือกผู้ส่ง Mould --</option>
+                            ${MASTER_MOULD_SENDERS.map(s => `<option value="${s}">${s}</option>`).join('')}
+                        </select>
+                    </div>
+                `;
+            } else if (subtopic === 'JIG FA') {
+                container.innerHTML = `
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block font-bold text-slate-700 text-xs mb-1.5">CUSTOMER <span class="text-rose-500">*</span></label>
+                            <select id="field_customer" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs focus:ring-2 focus:ring-sky-500 outline-none">
+                                <option value="">-- เลือก Customer --</option>
+                                ${customerOptions}
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block font-bold text-slate-700 text-xs mb-1.5">PART NO. <span class="text-rose-500">*</span></label>
+                            <input type="text" id="field_partNo" required oninput="this.value = this.value.toUpperCase()" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs focus:ring-2 focus:ring-sky-500 outline-none uppercase font-bold" placeholder="ระบุ Part No...">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block font-bold text-slate-700 text-xs mb-1.5">REV. (ตัวเลขเท่านั้น) <span class="text-rose-500">*</span></label>
+                            <input type="number" id="field_rev" required min="0" value="0" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs focus:ring-2 focus:ring-sky-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block font-bold text-slate-700 text-xs mb-1.5">จำนวน JIG ที่ส่งตรวจสอบ <span class="text-rose-500">*</span></label>
+                            <input type="number" id="field_jigQty" required min="1" value="1" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs focus:ring-2 focus:ring-sky-500 outline-none">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 text-xs mb-1.5">ชนิด JIG ที่ต้องการใช้งาน <span class="text-rose-500">*</span></label>
+                        <div class="space-y-2 pt-1 bg-slate-50 p-4 rounded-xl border border-slate-200">
+                            <label class="flex items-center space-x-3 cursor-pointer">
+                                <input type="radio" name="jigType" value="วัด Dimension" onchange="toggleJigOther()" required class="text-sky-600 focus:ring-sky-500 h-4 w-4">
+                                <span class="text-xs font-medium text-slate-700">วัด Dimension</span>
+                            </label>
+                            <label class="flex items-center space-x-3 cursor-pointer">
+                                <input type="radio" name="jigType" value="ติดกาว" onchange="toggleJigOther()" class="text-sky-600 focus:ring-sky-500 h-4 w-4">
+                                <span class="text-xs font-medium text-slate-700">ติดกาว</span>
+                            </label>
+                            <label class="flex items-center space-x-3 cursor-pointer">
+                                <input type="radio" name="jigType" value="อื่นๆ" onchange="toggleJigOther()" class="text-sky-600 focus:ring-sky-500 h-4 w-4">
+                                <span class="text-xs font-medium text-slate-700">อื่นๆ</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div id="jigDetailWrapper" class="hidden">
+                        <label class="block font-bold text-slate-700 text-xs mb-1.5">ระบุรายละเอียด JIG (อื่นๆ) <span class="text-rose-500">*</span></label>
+                        <input type="text" id="field_jigTypeDetail" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs focus:ring-2 focus:ring-sky-500 outline-none" placeholder="โปรดระบุรายละเอียดเพิ่มเติม...">
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 text-xs mb-1.5">ผู้ส่ง JIG <span class="text-rose-500">*</span></label>
+                        <select id="field_jigSender" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs focus:ring-2 focus:ring-sky-500 outline-none">
+                            <option value="">-- เลือกผู้ส่ง JIG --</option>
+                            ${MASTER_JIG_SENDERS.map(s => `<option value="${s}">${s}</option>`).join('')}
+                        </select>
+                    </div>
+                `;
+            } else if (subtopic === 'FIRST SHOT FA') {
+                container.innerHTML = `
+                    <div>
+                        <label class="block font-bold text-slate-700 text-xs mb-1.5">FA NO. (รับตัวเลขและสัญลักษณ์ เช่น /) <span class="text-rose-500">*</span></label>
+                        <input type="text" id="field_faNo" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs focus:ring-2 focus:ring-sky-500 outline-none font-bold" placeholder="เช่น FA/2026-001">
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block font-bold text-slate-700 text-xs mb-1.5">CUSTOMER <span class="text-rose-500">*</span></label>
+                            <select id="field_customer" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs focus:ring-2 focus:ring-sky-500 outline-none">
+                                <option value="">-- เลือก Customer --</option>
+                                ${customerOptions}
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block font-bold text-slate-700 text-xs mb-1.5">PART NO. <span class="text-rose-500">*</span></label>
+                            <input type="text" id="field_partNo" required oninput="this.value = this.value.toUpperCase()" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs focus:ring-2 focus:ring-sky-500 outline-none uppercase font-bold" placeholder="ระบุ Part No...">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 text-xs mb-1.5">REV. (ตัวเลขเท่านั้น) <span class="text-rose-500">*</span></label>
+                        <input type="number" id="field_rev" required min="0" value="0" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs focus:ring-2 focus:ring-sky-500 outline-none">
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block font-bold text-slate-700 text-xs mb-1.5">TOOLING REQUIRE (เลือกได้ 1 รายการ)</label>
+                            <div id="toolingRadioGroup" class="space-y-2 pt-1 bg-slate-50 p-4 rounded-xl border border-slate-200">
+                                <label class="flex items-center space-x-3 cursor-pointer">
+                                    <input type="radio" name="toolingRequire" value="TOOLING" onchange="handleFirstShotToggle()" class="text-sky-600 focus:ring-sky-500 h-4 w-4">
+                                    <span class="text-xs font-medium text-slate-700">TOOLING</span>
+                                </label>
+                                <label class="flex items-center space-x-3 cursor-pointer">
+                                    <input type="radio" name="toolingRequire" value="LASER" onchange="handleFirstShotToggle()" class="text-sky-600 focus:ring-sky-500 h-4 w-4">
+                                    <span class="text-xs font-medium text-slate-700">LASER</span>
+                                </label>
+                                <label class="flex items-center space-x-3 cursor-pointer">
+                                    <input type="radio" name="toolingRequire" value="CDC" onchange="handleFirstShotToggle()" class="text-sky-600 focus:ring-sky-500 h-4 w-4">
+                                    <span class="text-xs font-medium text-slate-700">CDC</span>
+                                </label>
+                                <label class="flex items-center space-x-3 cursor-pointer">
+                                    <input type="radio" name="toolingRequire" value="V-CUT" onchange="handleFirstShotToggle()" class="text-sky-600 focus:ring-sky-500 h-4 w-4">
+                                    <span class="text-xs font-medium text-slate-700">V-CUT</span>
+                                </dov>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block font-bold text-slate-700 text-xs mb-1.5">PACK (เลือกได้หากไม่เลือก Tooling)</label>
+                            <div class="pt-1 bg-slate-50 p-4 rounded-xl border border-slate-200 flex items-center h-[132px]">
+                                <label class="flex items-center space-x-3 cursor-pointer">
+                                    <input type="checkbox" id="field_pack" onchange="handlePackToggle()" class="text-sky-600 focus:ring-sky-500 h-5 w-5 rounded">
+                                    <span class="text-xs font-bold text-slate-700">PACK (เลือก PACK)</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block font-bold text-slate-700 text-xs mb-1.5">กลุ่มเครื่องผลิต <span class="text-rose-500">*</span></label>
+                            <select id="machineGroupSelect" required onchange="onMachineGroupChange()" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs focus:ring-2 focus:ring-sky-500 outline-none">
+                                <option value="">-- เลือกกลุ่มเครื่อง --</option>
+                                <option value="CDC">CDC</option>
+                                <option value="PACKING">PACKING</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block font-bold text-slate-700 text-xs mb-1.5">เครื่องที่ผลิต <span class="text-rose-500">*</span></label>
+                            <select id="field_machine" required disabled class="w-full bg-slate-100 border border-slate-200 rounded-xl px-4 py-2.5 text-xs focus:ring-2 focus:ring-sky-500 outline-none">
+                                <option value="">-- เลือกกลุ่มเครื่องจักรก่อน --</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 text-xs mb-1.5">จำนวนที่ส่ง (จำนวนหลัก + จำนวนเพิ่มเติม) <span class="text-rose-500">*</span></label>
+                        <div class="grid grid-cols-2 gap-3">
+                            <input type="number" id="field_mainQty" required min="1" placeholder="จำนวนหลัก เช่น 5000" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs focus:ring-2 focus:ring-sky-500 outline-none">
+                            <input type="number" id="field_extraQty" min="0" placeholder="จำนวนเพิ่มเติม เช่น 2 (เว้นว่างได้)" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs focus:ring-2 focus:ring-sky-500 outline-none">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 text-xs mb-1.5">ผู้ส่งงาน <span class="text-rose-500">*</span></label>
+                        <input type="text" id="field_jobSender" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs focus:ring-2 focus:ring-sky-500 outline-none" placeholder="ระบุชื่อผู้ส่งงาน...">
+                    </div>
+                `;
+            } else if (subtopic === 'FA FG') {
+                container.innerHTML = `
+                    <div>
+                        <label class="block font-bold text-slate-700 text-xs mb-1.5">FA NO. (รับตัวเลขและสัญลักษณ์ เช่น /) <span class="text-rose-500">*</span></label>
+                        <input type="text" id="field_faNo" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs focus:ring-2 focus:ring-sky-500 outline-none font-bold" placeholder="เช่น FA/2026-002">
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block font-bold text-slate-700 text-xs mb-1.5">CUSTOMER <span class="text-rose-500">*</span></label>
+                            <select id="field_customer" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs focus:ring-2 focus:ring-sky-500 outline-none">
+                                <option value="">-- เลือก Customer --</option>
+                                ${customerOptions}
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block font-bold text-slate-700 text-xs mb-1.5">PART NO. <span class="text-rose-500">*</span></label>
+                            <input type="text" id="field_partNo" required oninput="this.value = this.value.toUpperCase()" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs focus:ring-2 focus:ring-sky-500 outline-none uppercase font-bold" placeholder="ระบุ Part No...">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 text-xs mb-1.5">REV. (ตัวเลขเท่านั้น) <span class="text-rose-500">*</span></label>
+                        <input type="number" id="field_rev" required min="0" value="0" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs focus:ring-2 focus:ring-sky-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 text-xs mb-1.5">จำนวนงานที่ส่ง (จำนวนหลัก + จำนวนเพิ่มเติม) <span class="text-rose-500">*</span></label>
+                        <div class="grid grid-cols-2 gap-3">
+                            <input type="number" id="field_mainQty" required min="1" placeholder="จำนวนหลัก เช่น 5000" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs focus:ring-2 focus:ring-sky-500 outline-none">
+                            <input type="number" id="field_extraQty" min="0" placeholder="จำนวนเพิ่มเติม เช่น 2 (เว้นว่างได้)" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs focus:ring-2 focus:ring-sky-500 outline-none">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 text-xs mb-1.5">ผู้ส่งงาน <span class="text-rose-500">*</span></label>
+                        <input type="text" id="field_jobSender" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs focus:ring-2 focus:ring-sky-500 outline-none" placeholder="ระบุชื่อผู้ส่งงาน...">
+                    </div>
+                `;
+            }
+        }
+
+        // DYNAMIC UI HELPERS FOR FORM
+        function toggleJigOther() {
+            const radios = document.getElementsByName('jigType');
+            let selectedVal = '';
+            for (let r of radios) {
+                if (r.checked) selectedVal = r.value;
+            }
+            const detailWrapper = document.getElementById('jigDetailWrapper');
+            const detailInput = document.getElementById('field_jigTypeDetail');
+            
+            if (selectedVal === 'อื่นๆ') {
+                detailWrapper.classList.remove('hidden');
+                detailInput.required = true;
+            } else {
+                detailWrapper.classList.add('hidden');
+                detailInput.required = false;
                 detailInput.value = '';
             }
         }
 
-        function handleMachineCategoryChange(categorySelect) {
-            const machineSelect = document.getElementById('machineSelect');
-            if (!machineSelect) return;
-            const category = categorySelect.value;
+        function handleFirstShotToggle() {
+            const packCheck = document.getElementById('field_pack');
+            packCheck.checked = false;
+            packCheck.disabled = true;
+            packCheck.parentElement.parentElement.classList.add('opacity-50');
+        }
+
+        function handlePackToggle() {
+            const packCheck = document.getElementById('field_pack');
+            const radios = document.querySelectorAll('input[name="toolingRequire"]');
             
-            machineSelect.innerHTML = '<option value="">-- เลือกเครื่องที่ผลิต --</option>';
-            
-            if (category && DROPDOWN_DATA.machines[category]) {
-                DROPDOWN_DATA.machines[category].forEach(m => {
-                    machineSelect.innerHTML += `<option value="${m}">${m}</option>`;
-                });
-                machineSelect.disabled = false;
-                machineSelect.classList.remove('bg-slate-50', 'disabled:bg-slate-100', 'disabled:text-slate-400');
-            } else {
-                machineSelect.disabled = true;
-                machineSelect.innerHTML = '<option value="">-- กรุณาเลือกกลุ่มเครื่องก่อน --</option>';
-                machineSelect.classList.add('bg-slate-50');
-            }
-        }
-
-        function handleToolingRequireChange(radioEl) {
-            const packCheckbox = document.getElementById('packCheckbox');
-            if (packCheckbox) {
-                packCheckbox.checked = false;
-                packCheckbox.disabled = true;
-            }
-        }
-
-        function clearToolingRequire() {
-            const radios = document.getElementsByName('toolingRequire');
-            radios.forEach(r => {
-                r.checked = false;
-                r.disabled = false;
-            });
-            const packCheckbox = document.getElementById('packCheckbox');
-            if (packCheckbox) {
-                packCheckbox.disabled = false;
-            }
-        }
-
-        function handlePackChange(packCheckbox) {
-            const radios = document.getElementsByName('toolingRequire');
-            if (packCheckbox.checked) {
+            if (packCheck.checked) {
                 radios.forEach(r => {
                     r.checked = false;
                     r.disabled = true;
@@ -932,170 +831,255 @@
             }
         }
 
-        async function handleUserFormSubmit(event) {
+        function onMachineGroupChange() {
+            const groupVal = document.getElementById('machineGroupSelect').value;
+            const machineSelect = document.getElementById('field_machine');
+            machineSelect.innerHTML = '';
+            
+            if (!groupVal) {
+                machineSelect.disabled = true;
+                machineSelect.className = 'w-full bg-slate-100 border border-slate-200 rounded-xl px-4 py-2.5 text-xs focus:ring-2 focus:ring-sky-500 outline-none';
+                machineSelect.innerHTML = '<option value="">-- เลือกกลุ่มเครื่องจักรก่อน --</option>';
+                return;
+            }
+
+            machineSelect.disabled = false;
+            machineSelect.className = 'w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs focus:ring-2 focus:ring-sky-500 outline-none';
+
+            let optionsHtml = '<option value="">-- เลือกเครื่องผลิต --</option>';
+            if (groupVal === 'CDC') {
+                optionsHtml += `
+                    <option value="CDC1">CDC1</option>
+                    <option value="CDC2">CDC2</option>
+                    <option value="CDC3">CDC3</option>
+                    <option value="CDC4">CDC4</option>
+                `;
+            } else if (groupVal === 'PACKING') {
+                optionsHtml += `
+                    <option value="PACK1">PACK1</option>
+                    <option value="PACK2">PACK2</option>
+                `;
+            }
+            machineSelect.innerHTML = optionsHtml;
+        }
+
+        // SUBMIT FORM DATA
+        function handleFormSubmit(event) {
             event.preventDefault();
-            showLoader('กำลังบันทึกข้อมูลการส่งงาน...');
+            showLoading('กำลังบันทึกข้อมูล...');
 
-            const form = event.target;
-            const formData = new FormData(form);
-            const payload = {};
+            let formData = {
+                dept: currentSelectedDept,
+                subtopic: currentActiveSubtopic,
+                customer: document.getElementById('field_customer')?.value || '',
+                partNo: document.getElementById('field_partNo')?.value || '',
+                rev: document.getElementById('field_rev')?.value || '0',
+                jobSender: document.getElementById('field_jobSender')?.value || '',
+                mainQty: document.getElementById('field_mainQty')?.value || '0',
+                extraQty: document.getElementById('field_extraQty')?.value || '0'
+            };
 
-            // Handle multi-select checkboxes for toolingRequire
-            const toolingRequires = [];
-            formData.forEach((value, key) => {
-                if (key === 'toolingRequire') {
-                    toolingRequires.push(value);
-                } else {
-                    payload[key] = value;
+            if (currentActiveSubtopic === 'DIECUT INSPECTION') {
+                formData.diecutNo = document.getElementById('field_diecutNo').value;
+                formData.referNoDiecut = document.getElementById('field_referNoDiecut').value;
+                formData.cavity = document.getElementById('field_cavity').value;
+                formData.mouldSender = document.getElementById('field_mouldSender').value;
+            } else if (currentActiveSubtopic === 'JIG FA') {
+                const radios = document.getElementsByName('jigType');
+                let jigTypeVal = '';
+                for (let r of radios) {
+                    if (r.checked) jigTypeVal = r.value;
                 }
-            });
-            if (toolingRequires.length > 0) {
-                payload.toolingRequire = toolingRequires;
-            }
-
-            try {
-                const response = await fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                    body: JSON.stringify({
-                        action: 'submitUserJob',
-                        data: payload
-                    })
+                formData.jigType = jigTypeVal;
+                formData.jigTypeDetail = document.getElementById('field_jigTypeDetail')?.value || '';
+                formData.jigQty = document.getElementById('field_jigQty').value;
+                formData.jigSender = document.getElementById('field_jigSender').value;
+            } else if (currentActiveSubtopic === 'FIRST SHOT FA') {
+                formData.faNo = document.getElementById('field_faNo').value;
+                const radios = document.querySelectorAll('input[name="toolingRequire"]');
+                let toolingArr = [];
+                radios.forEach(r => {
+                    if (r.checked) toolingArr.push(r.value);
                 });
+                formData.toolingRequire = toolingArr;
+                formData.machine = document.getElementById('field_machine').value;
+                formData.pack = document.getElementById('field_pack').checked;
+                formData.jobSender = document.getElementById('field_jobSender').value;
+            } else if (currentActiveSubtopic === 'FA FG') {
+                formData.faNo = document.getElementById('field_faNo').value;
+            }
 
-                const res = await response.json();
-                hideLoader();
-
-                if (res.success) {
-                    showToast('บันทึกข้อมูลและส่งเรื่องเรียบร้อยแล้ว!', 'success');
-                    form.reset();
-                    
-                    // Reload dashboard data in background
-                    loadDashboardData();
-
-                    // Re-render the form to completely clear dynamic fields and stay on the same page
-                    const currentDept = document.getElementById('inputDept').value;
-                    const currentSubtopic = document.getElementById('inputSubtopic').value;
-                    openUserForm(currentDept, currentSubtopic);
-                } else {
-                    showToast('เกิดข้อผิดพลาด: ' + res.message, 'error');
+            fetch(SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify({ action: 'submitUserJob', data: formData })
+            })
+            .then(() => {
+                hideLoading();
+                showToast('บันทึกข้อมูลเรียบร้อยแล้ว!', 'success');
+                document.getElementById('inspectionForm').reset();
+                if (currentActiveSubtopic === 'FIRST SHOT FA') {
+                    const packCheck = document.getElementById('field_pack');
+                    if (packCheck) {
+                        packCheck.disabled = false;
+                        packCheck.parentElement.parentElement.classList.remove('opacity-50');
+                    }
+                    const radios = document.querySelectorAll('input[name="toolingRequire"]');
+                    radios.forEach(r => r.disabled = false);
                 }
-            } catch (err) {
-                hideLoader();
-                console.error(err);
-                // Demo fallback if CORS/URL not configured yet
-                showToast('บันทึกข้อมูลสำเร็จ (โหมดจำลองระบบ)', 'success');
-                form.reset();
-                
-                // Re-render the form to completely clear dynamic fields and stay on the same page
-                const currentDept = document.getElementById('inputDept').value;
-                const currentSubtopic = document.getElementById('inputSubtopic').value;
-                openUserForm(currentDept, currentSubtopic);
-            }
+                openForm(currentActiveSubtopic);
+            })
+            .catch(error => {
+                hideLoading();
+                showToast('เกิดข้อผิดพลาดในการบันทึกข้อมูล', 'error');
+                console.error(error);
+            });
         }
 
-        function handleAdminNavClick() {
+        // ADMIN LOGIN & AUTH
+        function openAdminLoginModal() {
             if (isAdminLoggedIn) {
-                showView('viewAdminDashboard');
-            } else {
-                document.getElementById('modalAdminLogin').classList.remove('hidden');
+                document.getElementById('viewDeptSelect').classList.add('hidden');
+                document.getElementById('viewSubtopicSelect').classList.add('hidden');
+                document.getElementById('viewForm').classList.add('hidden');
+                document.getElementById('viewAdminDashboard').classList.remove('hidden');
+                fetchDashboardData();
+                return;
             }
+            document.getElementById('adminLoginModal').classList.remove('hidden');
         }
 
-        function closeModal(modalId) {
-            document.getElementById(modalId).classList.add('hidden');
+        function closeAdminLoginModal() {
+            document.getElementById('adminLoginModal').classList.add('hidden');
+        }
+
+        function handleAdminLogin(event) {
+            event.preventDefault();
+            const user = document.getElementById('adminUser').value;
+            const pass = document.getElementById('adminPass').value;
+
+            if (user === 'admin' && pass === 'qa@lab') {
+                isAdminLoggedIn = true;
+                sessionStorage.setItem('amsAdminAuth', 'true');
+                closeAdminLoginModal();
+                showToast('เข้าสู่ระบบ Admin สำเร็จ', 'success');
+                
+                document.getElementById('viewDeptSelect').classList.add('hidden');
+                document.getElementById('viewSubtopicSelect').classList.add('hidden');
+                document.getElementById('viewForm').classList.add('hidden');
+                document.getElementById('viewAdminDashboard').classList.remove('hidden');
+                
+                const btn = document.getElementById('navAdminBtn');
+                btn.innerHTML = `<i class="fa-solid fa-chart-line text-sky-600 mr-1.5"></i> Admin Dashboard`;
+                btn.onclick = () => {
+                    document.getElementById('viewDeptSelect').classList.add('hidden');
+                    document.getElementById('viewSubtopicSelect').classList.add('hidden');
+                    document.getElementById('viewForm').classList.add('hidden');
+                    document.getElementById('viewAdminDashboard').classList.remove('hidden');
+                };
+
+                fetchDashboardData();
+            } else {
+                showToast('Username หรือ Password ไม่ถูกต้อง', 'error');
+            }
         }
 
         function checkAdminSession() {
-            const session = sessionStorage.getItem('ams_admin_logged_in');
-            if (session === 'true') {
+            if (sessionStorage.getItem('amsAdminAuth') === 'true') {
                 isAdminLoggedIn = true;
-                document.getElementById('adminBtnLabel').innerText = 'Admin Dashboard';
-            }
-        }
-
-        function handleAdminLoginSubmit(e) {
-            e.preventDefault();
-            const user = document.getElementById('loginUsername').value.trim();
-            const pass = document.getElementById('loginPassword').value.trim();
-            const errEl = document.getElementById('loginErrorMessage');
-
-            // Requirement 2: Username: admin, Password: qa@lab
-            if (user === 'admin' && pass === 'qa@lab') {
-                isAdminLoggedIn = true;
-                sessionStorage.setItem('ams_admin_logged_in', 'true');
-                document.getElementById('adminBtnLabel').innerText = 'Admin Dashboard';
-                errEl.classList.add('hidden');
-                closeModal('modalAdminLogin');
-                showToast('เข้าสู่ระบบ Admin สำเร็จ', 'success');
-                showView('viewAdminDashboard');
-                refreshDashboardData();
-            } else {
-                errEl.innerText = 'Username หรือ Password ไม่ถูกต้อง!';
-                errEl.classList.remove('hidden');
+                const btn = document.getElementById('navAdminBtn');
+                btn.innerHTML = `<i class="fa-solid fa-chart-line text-sky-600 mr-1.5"></i> Admin Dashboard`;
+                btn.onclick = () => {
+                    document.getElementById('viewDeptSelect').classList.add('hidden');
+                    document.getElementById('viewSubtopicSelect').classList.add('hidden');
+                    document.getElementById('viewForm').classList.add('hidden');
+                    document.getElementById('viewAdminDashboard').classList.remove('hidden');
+                };
             }
         }
 
         function handleAdminLogout() {
             isAdminLoggedIn = false;
-            sessionStorage.removeItem('ams_admin_logged_in');
-            document.getElementById('adminBtnLabel').innerText = 'Admin Login';
-            showToast('ออกจากระบบ Admin เรียบร้อย', 'info');
-            showView('viewUserDeptSelect');
+            sessionStorage.removeItem('amsAdminAuth');
+            const btn = document.getElementById('navAdminBtn');
+            btn.innerHTML = `<i class="fa-solid fa-lock text-sky-600 mr-1.5"></i> Admin Login`;
+            btn.onclick = openAdminLoginModal;
+            showToast('ออกจากระบบเรียบร้อยแล้ว', 'success');
+            navigateToHome();
         }
 
-        async function loadDashboardData() {
-            try {
-                const response = await fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                    body: JSON.stringify({ action: 'getDashboardData' })
-                });
-
-                const res = await response.json();
-                if (res.success && Array.isArray(res.records)) {
-    allJobRecords = res.records;
-    populateCustomerFilterOptions();
-    applyFilters();
-}
-            } catch (err) {
-    console.warn('Could not fetch GAS data:', err);
-}
+        // ADMIN DASHBOARD DATA & FILTERING
+        function fetchDashboardData() {
+            showLoading('กำลังโหลดข้อมูลแดชบอร์ด...');
+            
+            fetch(SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify({ action: 'getDashboardData' })
+            })
+            .then(() => {
+                // Since Google Apps Script no-cors won't return JSON directly, we use mock simulation if needed or fallback fetch
+                // For direct Apps Script execution simulation or jsonp/cors proxy fallback:
+                // Let's call standard fetch with text parser fallback
+                return fetch(SCRIPT_URL + '?action=getDashboardData');
+            })
+            .then(res => res.json())
+            .then(data => {
+                hideLoading();
+                if (data.success) {
+                    allJobRecords = data.records || [];
+                    populateCustomerFilterDropdown();
+                    applyFilters();
+                } else {
+                    showToast(data.message || 'ไม่สามารถโหลดข้อมูลได้', 'error');
+                }
+            })
+            .catch(() => {
+                hideLoading();
+                // Fallback mock test data if network fetch blocked
+                if (allJobRecords.length === 0) {
+                    allJobRecords = [
+                        { id: 'FA-101', dept: 'Engineer', subtopic: 'DIECUT INSPECTION', status: 'รอตรวจสอบ', userDate: '07/03/2026', userTime: '10:15:20', diecutNo: 'DC-5501', customer: 'DENSO', partNo: 'PART-A1', jobSender: 'Somchai M.' },
+                        { id: 'FA-102', dept: 'Production', subtopic: 'FIRST SHOT FA', status: 'OK', userDate: '07/03/2026', userTime: '11:00:05', faNo: 'FA/2026-001', customer: 'HONDA', partNo: 'PART-B2', jobSender: 'Wichai B.', inspectionResult: 'OK', inspector: 'QA Inspector 1' }
+                    ];
+                }
+                populateCustomerFilterDropdown();
+                applyFilters();
+                showToast('โหลดข้อมูลตัวอย่างสำเร็จ', 'success');
+            });
         }
 
         function refreshDashboardData() {
-            showLoader('กำลังอัปเดตข้อมูลจาก Google Sheets...');
-            loadDashboardData().finally(() => {
-                hideLoader();
-                showToast('อัปเดตข้อมูลล่าสุดเรียบร้อย', 'info');
-            });
+            fetchDashboardData();
         }
 
-        function populateCustomerFilterOptions() {
-            const customerSet = new Set(DROPDOWN_DATA.customers);
-            allJobRecords.forEach(r => {
-                if (r.customer) customerSet.add(r.customer);
+        function populateCustomerFilterDropdown() {
+            const customerSelect = document.getElementById('filterCustomer');
+            const currentVal = customerSelect.value;
+            
+            const customers = [...new Set(allJobRecords.map(r => r.customer).filter(Boolean))];
+            
+            let html = '<option value="ALL">ทั้งหมด</option>';
+            customers.forEach(c => {
+                html += `<option value="${c}">${c}</option>`;
             });
-
-            const select = document.getElementById('filterCustomer');
-            select.innerHTML = '<option value="">ทั้งหมด (All)</option>';
-            customerSet.forEach(c => {
-                select.innerHTML += `<option value="${c}">${c}</option>`;
-            });
+            customerSelect.innerHTML = html;
+            customerSelect.value = currentVal;
         }
 
         function onFilterDeptChange() {
-            const deptVal = document.getElementById('filterDept').value;
+            const dept = document.getElementById('filterDept').value;
             const subtopicSelect = document.getElementById('filterSubtopic');
-
-            subtopicSelect.innerHTML = '<option value="">ทั้งหมด (All)</option>';
-
-            if (deptVal === 'Engineer') {
+            
+            subtopicSelect.innerHTML = '<option value="ALL">ทั้งหมด</option>';
+            if (dept === 'Engineer') {
                 subtopicSelect.innerHTML += `
                     <option value="DIECUT INSPECTION">DIECUT INSPECTION</option>
                     <option value="JIG FA">JIG FA</option>
                 `;
-            } else if (deptVal === 'Production') {
+            } else if (dept === 'Production') {
                 subtopicSelect.innerHTML += `
                     <option value="FIRST SHOT FA">FIRST SHOT FA</option>
                     <option value="FA FG">FA FG</option>
@@ -1108,7 +1092,6 @@
                     <option value="FA FG">FA FG</option>
                 `;
             }
-
             applyFilters();
         }
 
@@ -1117,56 +1100,31 @@
             const subtopic = document.getElementById('filterSubtopic').value;
             const status = document.getElementById('filterStatus').value;
             const customer = document.getElementById('filterCustomer').value;
-            const search = document.getElementById('filterSearch').value.trim().toLowerCase();
-            const startDate = document.getElementById('filterStartDate').value;
-            const endDate = document.getElementById('filterEndDate').value;
 
             filteredRecords = allJobRecords.filter(r => {
-                if (dept && r.dept !== dept) return false;
-                if (subtopic && r.subtopic !== subtopic) return false;
-                if (status && r.status !== status) return false;
-                if (customer && r.customer !== customer) return false;
-
-                if (search) {
-                    const matchPart = (r.partNo || '').toLowerCase().includes(search);
-                    const matchFa = (r.faNo || '').toLowerCase().includes(search);
-                    const matchSender = (r.jobSender || r.mouldSender || '').toLowerCase().includes(search);
-                    if (!matchPart && !matchFa && !matchSender) return false;
-                }
-
-                if (startDate) {
-                    // userDate format: dd/MM/yyyy
-                    const parts = (r.userDate || '').split('/');
-                    if (parts.length === 3) {
-                        const recDate = `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
-                        if (recDate < startDate) return false;
-                    }
-                }
-
-                if (endDate) {
-                    const parts = (r.userDate || '').split('/');
-                    if (parts.length === 3) {
-                        const recDate = `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
-                        if (recDate > endDate) return false;
-                    }
-                }
-
+                if (dept !== 'ALL' && r.dept !== dept) return false;
+                if (subtopic !== 'ALL' && r.subtopic !== subtopic) return false;
+                if (status !== 'ALL' && r.status !== status) return false;
+                if (customer !== 'ALL' && r.customer !== customer) return false;
                 return true;
             });
 
             updateKPIs();
+            
+            // Apply sorting and reset page after filtering
+            applySort();
+            currentPage = 1;
             renderAdminTable();
+            updateSortIcons();
         }
 
         function resetFilters() {
-            document.getElementById('filterDept').value = '';
-            document.getElementById('filterSubtopic').value = '';
-            document.getElementById('filterStatus').value = '';
-            document.getElementById('filterCustomer').value = '';
-            document.getElementById('filterSearch').value = '';
-            document.getElementById('filterStartDate').value = '';
-            document.getElementById('filterEndDate').value = '';
+            document.getElementById('filterDept').value = 'ALL';
             onFilterDeptChange();
+            document.getElementById('filterSubtopic').value = 'ALL';
+            document.getElementById('filterStatus').value = 'ALL';
+            document.getElementById('filterCustomer').value = 'ALL';
+            applyFilters();
         }
 
         function updateKPIs() {
@@ -1184,33 +1142,198 @@
             document.getElementById('tableRecordCount').innerText = total;
         }
 
+        function exportToCSV() {
+            if (filteredRecords.length === 0) {
+                showToast('ไม่มีข้อมูลสำหรับ Export', 'error');
+                return;
+            }
+
+            const headers = ['วันที่ส่ง', 'เวลาส่ง', 'แผนก', 'หัวข้อย่อย', 'FA NO / DIECUT NO', 'CUSTOMER', 'PART NO', 'REV', 'ผู้ส่งงาน', 'สถานะ', 'ผลการตรวจ', 'ผู้ตรวจ', 'หมายเหตุ'];
+            
+            let csvContent = "\uFEFF"; // BOM for UTF-8 Excel compatibility
+            csvContent += headers.join(',') + '\n';
+
+            filteredRecords.forEach(r => {
+                const sender = r.jobSender || r.mouldSender || r.jigSender || '';
+                const faNo = r.faNo || r.diecutNo || '';
+                const row = [
+                    r.userDate,
+                    r.userTime,
+                    r.dept,
+                    r.subtopic,
+                    `"${faNo}"`,
+                    `"${r.customer || ''}"`,
+                    `"${r.partNo || ''}"`,
+                    r.rev,
+                    `"${sender}"`,
+                    r.status,
+                    r.inspectionResult || '',
+                    `"${r.inspector || ''}"`,
+                    `"${(r.remark || '').replace(/"/g, '""')}"`
+                ];
+                csvContent += row.join(',') + '\n';
+            });
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            const url = URL.createObjectURL(blob);
+            link.setAttribute("href", url);
+            const timestamp = new Date().toISOString().slice(0,10);
+            link.setAttribute("download", `FA_Inspection_Report_${timestamp}.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function sortData(col) {
+            if (sortColumn === col) {
+                sortAscending = !sortAscending;
+            } else {
+                sortColumn = col;
+                sortAscending = true;
+            }
+            
+            applySort();
+            currentPage = 1;
+            renderAdminTable();
+            updateSortIcons();
+        }
+
+        function applySort() {
+            filteredRecords.sort((a, b) => {
+                let valA, valB;
+                switch(sortColumn) {
+                    case 'userDate':
+                        const parseDate = (d, t) => {
+                            if(!d) return 0;
+                            const parts = d.split('/');
+                            if(parts.length !== 3) return 0;
+                            return new Date(`${parts[2]}-${parts[1]}-${parts[0]}T${t || '00:00:00'}`).getTime();
+                        };
+                        valA = parseDate(a.userDate, a.userTime);
+                        valB = parseDate(b.userDate, b.userTime);
+                        break;
+                    case 'dept': valA = a.dept || ''; valB = b.dept || ''; break;
+                    case 'subtopic': valA = a.subtopic || ''; valB = b.subtopic || ''; break;
+                    case 'faNo': valA = (a.faNo || a.diecutNo || ''); valB = (b.faNo || b.diecutNo || ''); break;
+                    case 'customer': valA = a.customer || ''; valB = b.customer || ''; break;
+                    case 'partNo': valA = a.partNo || ''; valB = b.partNo || ''; break;
+                    case 'sender': valA = (a.jobSender || a.mouldSender || a.jigSender || ''); valB = (b.jobSender || b.mouldSender || b.jigSender || ''); break;
+                    case 'status': valA = a.status || ''; valB = b.status || ''; break;
+                    default: valA = ''; valB = '';
+                }
+
+                if (valA < valB) return sortAscending ? -1 : 1;
+                if (valA > valB) return sortAscending ? 1 : -1;
+                return 0;
+            });
+        }
+
+        function updateSortIcons() {
+            const headers = document.querySelectorAll('th[onclick]');
+            headers.forEach(th => {
+                const icon = th.querySelector('i');
+                if (icon) {
+                    icon.className = 'fa-solid fa-sort ml-1 text-slate-300 group-hover:text-slate-500 text-[10px]';
+                }
+            });
+
+            const activeHeader = document.querySelector(`th[onclick="sortData('${sortColumn}')"]`);
+            if (activeHeader) {
+                const icon = activeHeader.querySelector('i');
+                if (icon) {
+                    icon.className = `fa-solid ${sortAscending ? 'fa-sort-up' : 'fa-sort-down'} ml-1 text-sky-600 text-[10px]`;
+                }
+            }
+        }
+
+        function changePage(page) {
+            const totalPages = Math.ceil(filteredRecords.length / rowsPerPage);
+            if (page < 1 || page > totalPages) return;
+            currentPage = page;
+            renderAdminTable();
+        }
+
+        function renderPaginationControls(totalPages) {
+            const container = document.getElementById('paginationControls');
+            let html = '';
+
+            // Prev button
+            html += `<button onclick="changePage(${currentPage - 1})" class="px-2 py-1 border border-slate-200 bg-white rounded text-slate-500 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm transition-colors" ${currentPage === 1 ? 'disabled' : ''}><i class="fa-solid fa-chevron-left text-[10px]"></i></button>`;
+
+            // Page numbers
+            let startPage = Math.max(1, currentPage - 2);
+            let endPage = Math.min(totalPages, currentPage + 2);
+
+            if (startPage > 1) {
+                html += `<button onclick="changePage(1)" class="px-2.5 py-1 text-xs border border-slate-200 bg-white rounded text-slate-600 hover:bg-slate-50 shadow-sm transition-colors">1</button>`;
+                if (startPage > 2) html += `<span class="px-1 text-slate-400 text-xs">...</span>`;
+            }
+
+            for (let i = startPage; i <= endPage; i++) {
+                if (i === currentPage) {
+                    html += `<button class="px-2.5 py-1 text-xs border border-sky-500 bg-sky-50 text-sky-700 rounded font-bold shadow-sm">${i}</button>`;
+                } else {
+                    html += `<button onclick="changePage(${i})" class="px-2.5 py-1 text-xs border border-slate-200 bg-white rounded text-slate-600 hover:bg-slate-50 shadow-sm transition-colors">${i}</button>`;
+                }
+            }
+
+            if (endPage < totalPages) {
+                if (endPage < totalPages - 1) html += `<span class="px-1 text-slate-400 text-xs">...</span>`;
+                html += `<button onclick="changePage(${totalPages})" class="px-2.5 py-1 text-xs border border-slate-200 bg-white rounded text-slate-600 hover:bg-slate-50 shadow-sm transition-colors">${totalPages}</button>`;
+            }
+
+            // Next button
+            html += `<button onclick="changePage(${currentPage + 1})" class="px-2 py-1 border border-slate-200 bg-white rounded text-slate-500 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm transition-colors" ${currentPage === totalPages ? 'disabled' : ''}><i class="fa-solid fa-chevron-right text-[10px]"></i></button>`;
+
+            container.innerHTML = html;
+        }
+
         function renderAdminTable() {
             const tbody = document.getElementById('adminTableBody');
             const emptyState = document.getElementById('tableEmptyState');
+            const paginationContainer = document.getElementById('paginationContainer');
             tbody.innerHTML = '';
 
-            if (filteredRecords.length === 0) {
+            const totalItems = filteredRecords.length;
+
+            if (totalItems === 0) {
                 emptyState.classList.remove('hidden');
+                paginationContainer.classList.add('hidden');
                 return;
             } else {
                 emptyState.classList.add('hidden');
+                paginationContainer.classList.remove('hidden');
             }
 
-            filteredRecords.forEach((record) => {
-                const tr = document.createElement('tr');
-                tr.className = 'hover:bg-slate-50 transition border-b border-slate-100';
+            const totalPages = Math.ceil(totalItems / rowsPerPage);
+            if (currentPage > totalPages) currentPage = totalPages;
+            if (currentPage < 1) currentPage = 1;
 
-                // Status Badge styling
+            const startIndex = (currentPage - 1) * rowsPerPage;
+            const endIndex = Math.min(startIndex + rowsPerPage, totalItems);
+            
+            document.getElementById('pageStartItem').innerText = startIndex + 1;
+            document.getElementById('pageEndItem').innerText = endIndex;
+            document.getElementById('pageTotalItems').innerText = totalItems;
+
+            const pageData = filteredRecords.slice(startIndex, endIndex);
+
+            pageData.forEach((record) => {
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-slate-50/80 transition-colors border-b border-slate-100 cursor-pointer';
+                tr.onclick = () => openAdminInspectionModal(record.id);
+
                 let statusBadge = '';
                 if (record.status === 'OK') {
-                    statusBadge = `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-200"><i class="fa-solid fa-circle-check mr-1"></i> OK</span>`;
+                    statusBadge = `<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">OK</span>`;
                 } else if (record.status === 'NG') {
-                    statusBadge = `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-rose-100 text-rose-800 border border-rose-200"><i class="fa-solid fa-circle-xmark mr-1"></i> NG</span>`;
+                    statusBadge = `<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-rose-100 text-rose-800 border border-rose-200">NG</span>`;
                 } else {
-                    statusBadge = `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800 border border-amber-200"><i class="fa-solid fa-clock mr-1"></i> รอตรวจสอบ</span>`;
+                    statusBadge = `<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-200">รอตรวจสอบ</span>`;
                 }
 
-                // Department Badge
                 const deptBadge = record.dept === 'Engineer' 
                     ? `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-sky-100 text-sky-800">Engineer</span>`
                     : `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800">Production</span>`;
@@ -1228,7 +1351,7 @@
                     <td class="p-3 text-slate-600 whitespace-nowrap">${record.jobSender || record.mouldSender || record.jigSender || '-'}</td>
                     <td class="p-3 text-center whitespace-nowrap">${statusBadge}</td>
                     <td class="p-3 text-center whitespace-nowrap">
-                        <button onclick="openAdminInspectionModal('${record.id}')" class="px-3 py-1 bg-sky-50 hover:bg-sky-100 text-sky-700 font-semibold rounded-lg text-xs border border-sky-200 transition">
+                        <button onclick="event.stopPropagation(); openAdminInspectionModal('${record.id}')" class="px-3 py-1 bg-sky-50 hover:bg-sky-100 text-sky-700 font-semibold rounded-lg text-xs border border-sky-200 transition shadow-sm">
                             <i class="fa-solid fa-pen-to-square mr-1"></i> ตรวจงาน
                         </button>
                     </td>
@@ -1236,138 +1359,90 @@
 
                 tbody.appendChild(tr);
             });
+            
+            renderPaginationControls(totalPages);
         }
 
         function openAdminInspectionModal(id) {
             const record = allJobRecords.find(r => r.id === id);
             if (!record) return;
 
-            document.getElementById('modalHiddenJobId').value = record.id;
-            document.getElementById('modalHiddenSheetName').value = record.sheetName;
+            document.getElementById('inspectRecordId').value = record.id;
+            document.getElementById('inspectSheetName').value = record.sheetName || '';
+            document.getElementById('modalRecordSubtopic').innerText = record.subtopic;
 
-            document.getElementById('modalJobBadge').innerText = `${record.dept} / ${record.subtopic}`;
-            document.getElementById('modalJobTitle').innerText = `รายการงาน ID: ${record.id}`;
-
-            // Populate Read-only User Detail Grid
-            const grid = document.getElementById('modalUserDetailGrid');
-            grid.innerHTML = `
-                <div><span class="text-slate-400">วันที่ส่งงาน:</span> <p class="font-semibold text-slate-800">${record.userDate} ${record.userTime}</p></div>
-                <div><span class="text-slate-400">FA NO / DIECUT NO:</span> <p class="font-bold text-sky-700">${record.faNo || record.diecutNo || '-'}</p></div>
-                <div><span class="text-slate-400">CUSTOMER:</span> <p class="font-semibold text-slate-800">${record.customer}</p></div>
-                <div><span class="text-slate-400">PART NO:</span> <p class="font-semibold text-slate-800">${record.partNo}</p></div>
-                <div><span class="text-slate-400">REV:</span> <p class="font-semibold text-slate-800">${record.rev}</p></div>
-                ${record.cavity ? `<div><span class="text-slate-400">CAVITY:</span> <p class="font-semibold text-slate-800">${record.cavity}</p></div>` : ''}
-                ${record.jigType ? `<div><span class="text-slate-400">ชนิด JIG:</span> <p class="font-semibold text-slate-800">${record.jigType} ${record.jigTypeDetail ? '('+record.jigTypeDetail+')' : ''}</p></div>` : ''}
-                ${record.jigQty ? `<div><span class="text-slate-400">จำนวน JIG:</span> <p class="font-semibold text-slate-800">${record.jigQty}</p></div>` : ''}
-                ${record.toolingRequire ? `<div><span class="text-slate-400">TOOLING REQUIRE:</span> <p class="font-semibold text-slate-800">${record.toolingRequire}</p></div>` : ''}
-                ${record.machine ? `<div><span class="text-slate-400">เครื่องที่ผลิต:</span> <p class="font-semibold text-slate-800">${record.machine}</p></div>` : ''}
-                ${record.pack ? `<div><span class="text-slate-400">PACK:</span> <p class="font-semibold text-slate-800">${record.pack}</p></div>` : ''}
-                ${record.mainQty ? `<div><span class="text-slate-400">จำนวนที่ส่ง:</span> <p class="font-semibold text-slate-800">${record.mainQty} ${record.extraQty ? '+ ' + record.extraQty : ''}</p></div>` : ''}
-                <div><span class="text-slate-400">ผู้ส่งงาน:</span> <p class="font-semibold text-slate-800">${record.jobSender || record.mouldSender || record.jigSender || '-'}</p></div>
-                <div><span class="text-slate-400">สถานะปัจจุบัน:</span> <p class="font-semibold text-amber-600">${record.status}</p></div>
+            let detailsHtml = `
+                <div><span class="text-slate-400 block">ID:</span> <strong class="text-slate-800">${record.id}</strong></div>
+                <div><span class="text-slate-400 block">วันที่ส่ง:</span> <strong class="text-slate-800">${record.userDate} ${record.userTime}</strong></div>
+                <div><span class="text-slate-400 block">Customer:</span> <strong class="text-slate-800">${record.customer || '-'}</strong></div>
+                <div><span class="text-slate-400 block">Part No:</span> <strong class="text-slate-800">${record.partNo || '-'}</strong></div>
+                <div><span class="text-slate-400 block">Rev:</span> <strong class="text-slate-800">${record.rev || '-'}</strong></div>
+                <div><span class="text-slate-400 block">ผู้ส่งงาน:</span> <strong class="text-slate-800">${record.jobSender || record.mouldSender || record.jigSender || '-'}</strong></div>
             `;
 
-            // Reset admin inputs
-            const radios = document.getElementsByName('modalInspectionResult');
-            radios.forEach(r => {
-                r.checked = (r.value === record.inspectionResult);
-            });
+            if (record.subtopic === 'DIECUT INSPECTION') {
+                detailsHtml += `
+                    <div><span class="text-slate-400 block">Diecut No:</span> <strong class="text-slate-800">${record.diecutNo}</strong></div>
+                    <div><span class="text-slate-400 block">Cavity:</span> <strong class="text-slate-800">${record.cavity}</strong></div>
+                `;
+            } else if (record.subtopic === 'JIG FA') {
+                detailsHtml += `
+                    <div><span class="text-slate-400 block">Jig Type:</span> <strong class="text-slate-800">${record.jigType}</strong></div>
+                    <div><span class="text-slate-400 block">Jig Qty:</span> <strong class="text-slate-800">${record.jigQty}</strong></div>
+                `;
+            } else if (record.subtopic === 'FIRST SHOT FA') {
+                detailsHtml += `
+                    <div><span class="text-slate-400 block">FA No:</span> <strong class="text-slate-800">${record.faNo}</strong></div>
+                    <div><span class="text-slate-400 block">Machine:</span> <strong class="text-slate-800">${record.machine}</strong></div>
+                `;
+            } else if (record.subtopic === 'FA FG') {
+                detailsHtml += `
+                    <div><span class="text-slate-400 block">FA No:</span> <strong class="text-slate-800">${record.faNo}</strong></div>
+                    <div><span class="text-slate-400 block">Main Qty:</span> <strong class="text-slate-800">${record.mainQty}</strong></div>
+                `;
+            }
 
-            document.getElementById('modalInspector').value = record.inspector || '';
-            document.getElementById('modalRemark').value = record.remark || '';
+            document.getElementById('modalUserDataContent').innerHTML = detailsHtml;
 
-            document.getElementById('modalAdminInspection').classList.remove('hidden');
+            document.getElementById('inspectResult').value = record.inspectionResult || '';
+            document.getElementById('inspectInspector').value = record.inspector || '';
+            document.getElementById('inspectRemark').value = record.remark || '';
+
+            document.getElementById('adminInspectionModal').classList.remove('hidden');
         }
 
-        async function handleSaveInspectionResult(event) {
+        function closeAdminInspectionModal() {
+            document.getElementById('adminInspectionModal').classList.add('hidden');
+        }
+
+        function handleAdminInspectSubmit(event) {
             event.preventDefault();
-            showLoader('กำลังบันทึกผลการตรวจสอบ...');
-
-            // Disable submit button & show spinner icon on button
-            const submitBtn = event.target.querySelector('button[type="submit"]');
-            const originalBtnHtml = submitBtn ? submitBtn.innerHTML : '';
-            if (submitBtn) {
-                submitBtn.disabled = true;
-                submitBtn.innerHTML = `<i class="fa-solid fa-spinner animate-spin mr-1.5"></i> <span>กำลังบันทึก...</span>`;
-            }
-
-            const id = document.getElementById('modalHiddenJobId').value;
-            const sheetName = document.getElementById('modalHiddenSheetName').value;
-            
-            let inspectionResult = '';
-            const radios = document.getElementsByName('modalInspectionResult');
-            radios.forEach(r => { if (r.checked) inspectionResult = r.value; });
-
-            const inspector = document.getElementById('modalInspector').value;
-            const remark = document.getElementById('modalRemark').value.trim();
+            showLoading('กำลังบันทึกผลตรวจสอบ...');
 
             const payload = {
-                id: id,
-                sheetName: sheetName,
-                inspectionResult: inspectionResult,
-                inspector: inspector,
-                remark: remark
+                id: document.getElementById('inspectRecordId').value,
+                sheetName: document.getElementById('inspectSheetName').value,
+                inspectionResult: document.getElementById('inspectResult').value,
+                inspector: document.getElementById('inspectInspector').value,
+                remark: document.getElementById('inspectRemark').value
             };
 
-            // Ensure loading spinner display is smoothly visible (~800ms)
-            const minLoadPromise = new Promise(resolve => setTimeout(resolve, 800));
-
-            try {
-                const responsePromise = fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                    body: JSON.stringify({
-                        action: 'updateInspection',
-                        data: payload
-                    })
-                });
-
-                const [response] = await Promise.all([responsePromise, minLoadPromise]);
-                const res = await response.json();
-                
-                hideLoader();
-                if (submitBtn) {
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = originalBtnHtml;
-                }
-
-                if (res.success) {
-                    showToast('บันทึกผลการตรวจสอบเรียบร้อยแล้ว', 'success');
-                    closeModal('modalAdminInspection');
-                    
-                    // Update record locally in memory for instant feedback
-                    const rec = allJobRecords.find(r => r.id === id);
-                    if (rec) {
-                        rec.status = inspectionResult;
-                        rec.inspectionResult = inspectionResult;
-                        rec.inspector = inspector;
-                        rec.remark = remark;
-                    }
-                    applyFilters();
-
-                } else {
-                    showToast('เกิดข้อผิดพลาด: ' + res.message, 'error');
-                }
-            } catch (err) {
-                await minLoadPromise;
-                hideLoader();
-                if (submitBtn) {
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = originalBtnHtml;
-                }
-                console.error(err);
-                // Fallback local update
-                const rec = allJobRecords.find(r => r.id === id);
-                if (rec) {
-                    rec.status = inspectionResult;
-                    rec.inspectionResult = inspectionResult;
-                    rec.inspector = inspector;
-                    rec.remark = remark;
-                }
-                applyFilters();
-                closeModal('modalAdminInspection');
-                showToast('บันทึกผลตรวจสอบเรียบร้อย (โหมดจำลองระบบ)', 'success');
-            }
+            fetch(SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify({ action: 'updateInspection', data: payload })
+            })
+            .then(() => {
+                hideLoading();
+                showToast('บันทึกผลการตรวจสอบเรียบร้อยแล้ว', 'success');
+                closeAdminInspectionModal();
+                fetchDashboardData();
+            })
+            .catch(() => {
+                hideLoading();
+                showToast('เกิดข้อผิดพลาดในการบันทึก', 'error');
+            });
         }
     </script>
 </body>
