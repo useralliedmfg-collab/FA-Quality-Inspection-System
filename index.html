@@ -981,40 +981,86 @@ main {
         }
 
         function selectDepartment(dept) {
-            document.getElementById('breadcrumbDeptName').innerText = dept;
-            const container = document.getElementById('subtopicCardsContainer');
-            container.innerHTML = '';
+    const container = document.getElementById('subtopicCardsContainer');
 
-            if (dept === 'Engineer') {
-                container.innerHTML = `
-                    <button onclick="openUserForm('Engineer', 'DIECUT INSPECTION')" class="bg-white p-6 rounded-2xl border-2 border-slate-200 hover:border-sky-500 shadow-sm hover:shadow-lg transition text-left">
-                        <div class="w-10 h-10 rounded-lg bg-sky-100 text-sky-600 flex items-center justify-center font-bold mb-3"><i class="fa-solid fa-scissors"></i></div>
-                        <h4 class="font-bold text-slate-900 text-base">DIECUT INSPECTION</h4>
-                        <p class="text-xs text-slate-500 mt-1">การตรวจสอบไดคัท งานแม่พิมพ์วิศวกรรม</p>
-                    </button>
-                    <button onclick="openUserForm('Engineer', 'JIG FA')" class="bg-white p-6 rounded-2xl border-2 border-slate-200 hover:border-sky-500 shadow-sm hover:shadow-lg transition text-left">
-                        <div class="w-10 h-10 rounded-lg bg-sky-100 text-sky-600 flex items-center justify-center font-bold mb-3"><i class="fa-solid fa-compass-drafting"></i></div>
-                        <h4 class="font-bold text-slate-900 text-base">JIG FA</h4>
-                        <p class="text-xs text-slate-500 mt-1">การส่งตรวจสอบ JIG และอุปกรณ์จับยึด</p>
-                    </button>
-                `;
-            } else if (dept === 'Production') {
-                container.innerHTML = `
-                    <button onclick="openUserForm('Production', 'FIRST SHOT FA')" class="bg-white p-6 rounded-2xl border-2 border-slate-200 hover:border-emerald-500 shadow-sm hover:shadow-lg transition text-left">
-                        <div class="w-10 h-10 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold mb-3"><i class="fa-solid fa-play"></i></div>
-                        <h4 class="font-bold text-slate-900 text-base">FIRST SHOT FA</h4>
-                        <p class="text-xs text-slate-500 mt-1">ตรวจสอบชิ้นงานแรกของการผลิต First Shot</p>
-                    </button>
-                    <button onclick="openUserForm('Production', 'FA FG')" class="bg-white p-6 rounded-2xl border-2 border-slate-200 hover:border-emerald-500 shadow-sm hover:shadow-lg transition text-left">
-                        <div class="w-10 h-10 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold mb-3"><i class="fa-solid fa-box-check"></i></div>
-                        <h4 class="font-bold text-slate-900 text-base">FA FG</h4>
-                        <p class="text-xs text-slate-500 mt-1">ตรวจสอบชิ้นงานสำเร็จรูปก่อนส่งมอบ (Finished Goods)</p>
-                    </button>
-                `;
-            }
+    if (!container) return;
 
-            showView('viewUserSubtopicSelect');
-        }
+    container.innerHTML = `
+        <!-- DIECUT INSPECTION -->
+        <button
+            onclick="openUserForm('Engineer', 'DIECUT INSPECTION')"
+            class="bg-white p-6 rounded-2xl border-2 border-slate-200 hover:border-sky-500 shadow-sm hover:shadow-lg transition text-left">
+
+            <div class="w-10 h-10 rounded-lg bg-sky-100 text-sky-600 flex items-center justify-center font-bold mb-3">
+                <i class="fa-solid fa-scissors"></i>
+            </div>
+
+            <h4 class="font-bold text-slate-900 text-base">
+                DIECUT INSPECTION
+            </h4>
+
+            <p class="text-xs text-slate-500 mt-1">
+                ตรวจสอบชิ้นงานและแม่พิมพ์ DIECUT
+            </p>
+        </button>
+
+        <!-- JIG FA -->
+        <button
+            onclick="openUserForm('Engineer', 'JIG FA')"
+            class="bg-white p-6 rounded-2xl border-2 border-slate-200 hover:border-sky-500 shadow-sm hover:shadow-lg transition text-left">
+
+            <div class="w-10 h-10 rounded-lg bg-sky-100 text-sky-600 flex items-center justify-center font-bold mb-3">
+                <i class="fa-solid fa-ruler-combined"></i>
+            </div>
+
+            <h4 class="font-bold text-slate-900 text-base">
+                JIG FA
+            </h4>
+
+            <p class="text-xs text-slate-500 mt-1">
+                ตรวจสอบและส่ง JIG สำหรับงาน FA
+            </p>
+        </button>
+
+        <!-- FIRST SHOT FA -->
+        <button
+            onclick="openUserForm('Production', 'FIRST SHOT FA')"
+            class="bg-white p-6 rounded-2xl border-2 border-slate-200 hover:border-emerald-500 shadow-sm hover:shadow-lg transition text-left">
+
+            <div class="w-10 h-10 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold mb-3">
+                <i class="fa-solid fa-play"></i>
+            </div>
+
+            <h4 class="font-bold text-slate-900 text-base">
+                FIRST SHOT FA
+            </h4>
+
+            <p class="text-xs text-slate-500 mt-1">
+                ตรวจสอบชิ้นงานแรกของการผลิต First Shot
+            </p>
+        </button>
+
+        <!-- FA FG -->
+        <button
+            onclick="openUserForm('Production', 'FA FG')"
+            class="bg-white p-6 rounded-2xl border-2 border-slate-200 hover:border-emerald-500 shadow-sm hover:shadow-lg transition text-left">
+
+            <div class="w-10 h-10 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold mb-3">
+                <i class="fa-solid fa-box-check"></i>
+            </div>
+
+            <h4 class="font-bold text-slate-900 text-base">
+                FA FG
+            </h4>
+
+            <p class="text-xs text-slate-500 mt-1">
+                ตรวจสอบชิ้นงานสำเร็จรูปก่อนส่งมอบ (Finished Goods)
+            </p>
+        </button>
+    `;
+
+    showView('viewUserSubtopicSelect');
+}
 
         function openUserForm(dept, subtopic) {
             document.getElementById('inputDept').value = dept;
