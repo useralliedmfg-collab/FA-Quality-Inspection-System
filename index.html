@@ -429,6 +429,7 @@ main {
 #viewUserForm input[type="radio"][name="toolingRequire"] {
     width: 22px !important;
     height: 22px !important;
+    min-width: 22px !important;
     min-height: 22px !important;
     margin-right: 9px !important;
     accent-color: #0284c7;
@@ -1304,10 +1305,25 @@ main {
                             <button type="button" onclick="clearToolingRequire()" class="text-[11px] text-sky-600 hover:text-sky-800 font-medium underline">ล้างการเลือก</button>
                         </div>
                         <div class="flex flex-wrap justify-center items-center gap-x-10 gap-y-4 p-4 bg-slate-50 rounded-lg border border-slate-200">
-                            <label class="inline-flex items-center text-xs font-medium cursor-pointer"><input type="radio" name="toolingRequire" value="TOOLING" onchange="handleToolingRequireChange(this)" class="text-sky-600 mr-2 focus:ring-sky-500"> TOOLING</label>
-                            <label class="inline-flex items-center text-xs font-medium cursor-pointer"><input type="radio" name="toolingRequire" value="LASER" onchange="handleToolingRequireChange(this)" class="text-sky-600 mr-2 focus:ring-sky-500"> LASER</label>
-                            <label class="inline-flex items-center text-xs font-medium cursor-pointer"><input type="radio" name="toolingRequire" value="CDC" onchange="handleToolingRequireChange(this)" class="text-sky-600 mr-2 focus:ring-sky-500"> CDC</label>
-                            <label class="inline-flex items-center text-xs font-medium cursor-pointer"><input type="radio" name="toolingRequire" value="V-CUT" onchange="handleToolingRequireChange(this)" class="text-sky-600 mr-2 focus:ring-sky-500"> V-CUT</label>
+                            <label class="inline-flex items-center text-xs font-medium cursor-pointer">
+    <input type="radio" name="toolingRequire" value="TOOLING" class="text-sky-600 mr-2 focus:ring-sky-500">
+    TOOLING
+</label>
+
+<label class="inline-flex items-center text-xs font-medium cursor-pointer">
+    <input type="radio" name="toolingRequire" value="LASER" class="text-sky-600 mr-2 focus:ring-sky-500">
+    LASER
+</label>
+
+<label class="inline-flex items-center text-xs font-medium cursor-pointer">
+    <input type="radio" name="toolingRequire" value="CDC" class="text-sky-600 mr-2 focus:ring-sky-500">
+    CDC
+</label>
+
+<label class="inline-flex items-center text-xs font-medium cursor-pointer">
+    <input type="radio" name="toolingRequire" value="V-CUT" class="text-sky-600 mr-2 focus:ring-sky-500">
+    V-CUT
+</label>
                         </div>
                     </div>
                     <!-- Cascading Machine Selection -->
@@ -1330,11 +1346,10 @@ main {
     <div class="p-2.5 bg-slate-50 rounded-lg border border-slate-200 flex items-center justify-center">
         <label class="inline-flex items-center text-xs font-semibold cursor-pointer">
             <input type="radio"
-                   name="pack"
-                   value="true"
-                   id="packRadio"
-                   onchange="handlePackChange(this)"
-                   class="text-sky-600 mr-2 focus:ring-sky-500">
+       name="toolingRequire"
+       value="PACK"
+       id="packRadio"
+       class="text-sky-600 mr-2 focus:ring-sky-500">
             <span>PACK ชิ้นงานแล้ว</span>
         </label>
     </div>
@@ -1425,42 +1440,6 @@ main {
                 machineSelect.classList.add('bg-slate-50');
             }
         }
-
-        function handleToolingRequireChange(radioEl) {
-    const packRadio = document.getElementById('packRadio');
-
-    if (packRadio) {
-        packRadio.checked = false;
-        packRadio.disabled = true;
-    }
-}
-
-        function clearToolingRequire() {
-            const radios = document.getElementsByName('toolingRequire');
-            radios.forEach(r => {
-                r.checked = false;
-                r.disabled = false;
-            });
-            const packRadio = document.getElementById('packRadio');
-if (packRadio) {
-    packRadio.disabled = false;
-}
-        }
-
-        function handlePackChange(packRadio) {
-    const radios = document.getElementsByName('toolingRequire');
-
-    if (packRadio.checked) {
-        radios.forEach(r => {
-            r.checked = false;
-            r.disabled = true;
-        });
-    } else {
-        radios.forEach(r => {
-            r.disabled = false;
-        });
-    }
-}
 
         async function handleUserFormSubmit(event) {
             event.preventDefault();
