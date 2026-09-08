@@ -623,12 +623,16 @@ main {
         <section id="viewUserForm" class="space-y-6 hidden">
             <div class="flex items-center justify-between text-xs font-medium text-slate-500">
                 <div class="flex items-center space-x-2">
-                    <button onclick="showView('viewUserSubtopicSelect')" class="hover:text-sky-600"><i class="fa-solid fa-chevron-left mr-1"></i> ย้อนกลับ</button>
-                    <span>/</span>
-                    <span id="formBreadcrumbDept" class="text-slate-700">Engineer</span>
-                    <span>/</span>
-                    <span id="formBreadcrumbSubtopic" class="text-slate-900 font-semibold">DIECUT INSPECTION</span>
-                </div>
+    <button onclick="showView('viewUserSubtopicSelect')" class="hover:text-sky-600">
+        <i class="fa-solid fa-chevron-left mr-1"></i> ย้อนกลับ
+    </button>
+
+    <span>/</span>
+
+    <span id="formBreadcrumbSubtopic" class="text-slate-900 font-semibold">
+        DIECUT INSPECTION
+    </span>
+</div>
                 <!-- Realtime Auto Date / Time Badge -->
                 <div class="bg-slate-100 text-slate-700 px-3 py-1 rounded-lg text-xs font-medium flex items-center space-x-2 border border-slate-200">
                     <i class="fa-regular fa-clock text-sky-600"></i>
@@ -1139,7 +1143,6 @@ main {
             document.getElementById('inputDept').value = dept;
             document.getElementById('inputSubtopic').value = subtopic;
 
-            document.getElementById('formBreadcrumbDept').innerText = dept;
             document.getElementById('formBreadcrumbSubtopic').innerText = subtopic;
             document.getElementById('formTitleText').innerText = `แบบฟอร์มส่งงาน ${subtopic}`;
             document.getElementById('formDeptBadge').innerText = dept;
