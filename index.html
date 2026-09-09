@@ -1431,6 +1431,10 @@ main {
                             REMARK
                         </th>
 
+                        <th class="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase whitespace-nowrap">
+                            ชื่อผู้รับ
+                        </th>
+
                     </tr>
 
                 </thead>
@@ -2481,6 +2485,70 @@ function populateMachineCategories() {
 
 }
 
+        async function saveReceiverName(recordId, receiverName) {
+
+    if (!receiverName) {
+        return;
+    }
+
+    try {
+
+        const response = await fetch(SCRIPT_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'text/plain;charset=utf-8'
+            },
+            body: JSON.stringify({
+                action: 'updateReceiverName',
+                data: {
+                    id: recordId,
+                    receiverName: receiverName
+                }
+            })
+        });
+
+        const res = await response.json();
+
+        if (res.success) {
+
+            // อัปเดตข้อมูลในหน้า Dashboard ทันที
+            const record = allJobRecords.find(
+                r => String(r.id) === String(recordId)
+            );
+
+            if (record) {
+                record.receiverName = receiverName;
+            }
+
+            showToast(
+                'บันทึกชื่อผู้รับเรียบร้อยแล้ว',
+                'success'
+            );
+
+        } else {
+
+            showToast(
+                'ไม่สามารถบันทึกชื่อผู้รับได้: ' +
+                (res.message || ''),
+                'error'
+            );
+
+        }
+
+    } catch (error) {
+
+        console.error(
+            'saveReceiverName Error:',
+            error
+        );
+
+        showToast(
+            'เกิดข้อผิดพลาดในการบันทึกชื่อผู้รับ',
+            'error'
+        );
+    }
+}
+
         // ==========================================
 // USER DASHBOARD
 // ==========================================
@@ -3048,6 +3116,24 @@ function renderUserDashboardTable(records) {
                 <td class="px-4 py-4 text-center">
                     ${statusBadge}
                 </td>
+
+                <td class="px-4 py-4 text-sm min-w-[180px]">
+    ${
+        subtopic === 'DIECUT INSPECTION' && result === 'OK'
+            ? `
+                <select
+                    class="w-full px-3 py-2 border border-slate-200 rounded-lg bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    onchange="saveReceiverName('${escapeHtmlUserDashboard(record.id)}', this.value)"
+                >
+                    <option value="">เลือกชื่อผู้รับ</option>
+                    <option value="สมชาย">สมชาย</option>
+                    <option value="สมหญิง">สมหญิง</option>
+                    <option value="วิชัย">วิชัย</option>
+                </select>
+              `
+            : '<span class="text-slate-300">-</span>'
+    }
+</td>
 
                 <td class="px-4 py-4 text-sm text-slate-600 min-w-[220px]">
     ${
