@@ -1374,10 +1374,7 @@ main {
             mouldSenders: ['วิศวกร Mould 1', 'วิศวกร Mould 2', 'ช่างพิมพ์ A'],
             jigSenders: ['ช่าง JIG 1', 'ช่าง JIG 2', 'Engineer A'],
             jobSenders: ['พนักงานผลิต 1', 'หัวหน้างาน Production', 'OP-01', 'OP-02'],
-            machines: {
-                'CDC': ['CDC1', 'CDC2', 'CDC3', 'CDC4'],
-                'PACKING': ['PACK1', 'PACK2']
-            }
+            machines: {}
         };
 
 // ========================================
@@ -1408,12 +1405,70 @@ main {
     }
 }
 
+// ========================================
+// โหลดข้อมูล Machine จาก Google Sheet
+// ========================================
+        async function loadMachineData() {
+    try {
+        const response = await fetch(SCRIPT_URL, {
+            method: 'POST',
+            body: JSON.stringify({
+                action: 'getMachineData'
+            })
+        });
+
+        const result = await response.json();
+
+        if (result.success && Array.isArray(result.machines)) {
+
+            // ล้างข้อมูลเดิม
+            DROPDOWN_DATA.machines = {};
+
+            // จัดข้อมูล Group + Machine ให้อยู่ในรูปแบบเดิม
+            result.machines.forEach(item => {
+                if (!DROPDOWN_DATA.machines[item.group]) {
+                    DROPDOWN_DATA.machines[item.group] = [];
+                }
+
+                DROPDOWN_DATA.machines[item.group].push(item.machine);
+            });
+
+            console.log('Machine data loaded:', DROPDOWN_DATA.machines);
+
+        } else {
+            console.error('ไม่สามารถโหลด Machine ได้');
+            DROPDOWN_DATA.machines = {};
+        }
+
+    } catch (error) {
+        console.error('Error loading Machine:', error);
+        DROPDOWN_DATA.machines = {};
+    }
+}
+
+        // ========================================
+// สร้าง Dropdown กลุ่มเครื่อง
+// ========================================
+function populateMachineCategories() {
+    const categorySelect = document.getElementById('machineCategory');
+    if (!categorySelect) return;
+
+    categorySelect.innerHTML = '<option value="">-- เลือกกลุ่มเครื่อง --</option>';
+
+    Object.keys(DROPDOWN_DATA.machines).forEach(category => {
+        categorySelect.innerHTML += `
+            <option value="${category}">${category}</option>
+        `;
+    });
+}
+
         // INITIALIZATION ON LOAD
         window.onload = async function() {
     startLiveClock();
     checkAdminSession();
 
     await loadCustomerData();
+    await loadMachineData();
 
     loadDashboardData();
 };
@@ -1711,10 +1766,8 @@ main {
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-1">กลุ่มเครื่องผลิต <span class="text-rose-500">*</span></label>
                         <select id="machineCategory" onchange="handleMachineCategoryChange(this)" required class="w-full text-xs rounded-lg border-slate-300 p-2.5 border">
-                            <option value="">-- เลือกกลุ่มเครื่อง --</option>
-                            <option value="CDC">CDC</option>
-                            <option value="PACKING">PACKING</option>
-                        </select>
+    <option value="">-- เลือกกลุ่มเครื่อง --</option>
+</select>
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-1">เครื่องที่ผลิต <span class="text-rose-500">*</span></label>
@@ -1743,11 +1796,13 @@ main {
                             <input type="number" name="extraQty" min="0" placeholder="จำนวนเพิ่มเติม (เช่น 2) ถ้าไม่มีเว้นว่างได้" class="w-1/2 text-xs rounded-lg border-slate-300 p-2.5 border">
                         </div>
                     </div>
-                    <div class="md:col-span-2">
+                        <div class="md:col-span-2">
                         <label class="block text-xs font-semibold text-slate-700 mb-1">ผู้ส่งงาน <span class="text-rose-500">*</span></label>
                         <input type="text" name="jobSender" required placeholder="ระบุชื่อผู้ส่งงาน..." class="w-full text-xs rounded-lg border-slate-300 p-2.5 border">
                     </div>
                 `;
+
+                populateMachineCategories();
             }
             // 6.2 FA FG
             else if (subtopic === 'FA FG') {
