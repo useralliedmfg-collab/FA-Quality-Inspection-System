@@ -884,8 +884,55 @@ main {
         </p>
     </div>
 
-    <!-- ALL SUBTOPICS -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto">
+    </div>
+
+<!-- ========================================== -->
+<!-- USER DASHBOARD BUTTON -->
+<!-- ========================================== -->
+<div class="max-w-3xl mx-auto mb-6">
+
+    <button
+        type="button"
+        onclick="showView('viewUserDashboard'); loadUserDashboard();"
+        class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-2xl p-5 shadow-lg hover:shadow-xl transition-all duration-200"
+    >
+
+        <div class="flex items-center justify-between">
+
+            <div class="flex items-center gap-4">
+
+                <div class="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center">
+
+                    <i class="fa-solid fa-chart-line text-xl"></i>
+
+                </div>
+
+                <div class="text-left">
+
+                    <h3 class="text-lg font-bold">
+                        User Dashboard
+                    </h3>
+
+                    <p class="text-sm text-blue-100">
+                        ดูสถานะงานที่ Admin ตรวจสอบ
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div>
+                <i class="fa-solid fa-chevron-right text-lg"></i>
+            </div>
+
+        </div>
+
+    </button>
+
+</div>
+
+<!-- ALL SUBTOPICS -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto">
 
         <!-- DIECUT INSPECTION -->
         <button
@@ -1055,6 +1102,338 @@ main {
                 </form>
             </div>
         </section>
+
+        <!-- ========================================== -->
+<!-- USER DASHBOARD -->
+<!-- ========================================== -->
+<section id="viewUserDashboard" class="hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+    <!-- Dashboard Header -->
+    <div class="mb-6">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+
+            <div>
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-lg">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+
+                    <div>
+                        <h1 class="text-2xl sm:text-3xl font-bold text-slate-800">
+                            My Dashboard
+                        </h1>
+
+                        <p class="text-sm text-slate-500">
+                            ติดตามสถานะงานตรวจสอบของคุณ
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Refresh Button -->
+            <button
+                type="button"
+                onclick="loadUserDashboard()"
+                class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-700 font-semibold shadow-sm hover:bg-slate-50 transition"
+            >
+                <i class="fas fa-sync-alt"></i>
+                รีเฟรชข้อมูล
+            </button>
+
+        </div>
+    </div>
+
+
+    <!-- ========================================== -->
+    <!-- KPI CARDS -->
+    <!-- ========================================== -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+
+        <!-- Total -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-slate-500">
+                        งานทั้งหมด
+                    </p>
+
+                    <p id="userKpiTotal" class="text-3xl font-bold text-slate-800 mt-1">
+                        0
+                    </p>
+                </div>
+
+                <div class="w-11 h-11 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center">
+                    <i class="fas fa-layer-group"></i>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Pending -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-slate-500">
+                        รอตรวจ
+                    </p>
+
+                    <p id="userKpiPending" class="text-3xl font-bold text-amber-500 mt-1">
+                        0
+                    </p>
+                </div>
+
+                <div class="w-11 h-11 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center">
+                    <i class="fas fa-clock"></i>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Passed -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-slate-500">
+                        ผ่าน
+                    </p>
+
+                    <p id="userKpiPassed" class="text-3xl font-bold text-emerald-600 mt-1">
+                        0
+                    </p>
+                </div>
+
+                <div class="w-11 h-11 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Failed -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-slate-500">
+                        ไม่ผ่าน
+                    </p>
+
+                    <p id="userKpiFailed" class="text-3xl font-bold text-red-600 mt-1">
+                        0
+                    </p>
+                </div>
+
+                <div class="w-11 h-11 rounded-xl bg-red-100 text-red-600 flex items-center justify-center">
+                    <i class="fas fa-times-circle"></i>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+    <!-- ========================================== -->
+    <!-- FILTER -->
+    <!-- ========================================== -->
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 mb-6">
+
+        <div class="flex items-center gap-2 mb-4">
+            <i class="fas fa-filter text-blue-600"></i>
+
+            <h2 class="font-bold text-slate-800">
+                กรองข้อมูล
+            </h2>
+        </div>
+
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+
+            <!-- Subtopic -->
+            <div>
+                <label class="block text-sm font-semibold text-slate-700 mb-1.5">
+                    หัวข้องาน
+                </label>
+
+                <select
+                    id="userFilterSubtopic"
+                    onchange="applyUserDashboardFilters()"
+                    class="w-full rounded-xl border border-slate-300 px-3 py-2.5 bg-white text-slate-700 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                >
+                    <option value="">ทั้งหมด</option>
+                    <option value="DIECUT INSPECTION">DIECUT INSPECTION</option>
+                    <option value="JIG FA">JIG FA</option>
+                    <option value="FIRST SHOT FA">FIRST SHOT FA</option>
+                    <option value="FA FG">FA FG</option>
+                </select>
+            </div>
+
+
+            <!-- Status -->
+            <div>
+                <label class="block text-sm font-semibold text-slate-700 mb-1.5">
+                    สถานะ
+                </label>
+
+                <select
+                    id="userFilterStatus"
+                    onchange="applyUserDashboardFilters()"
+                    class="w-full rounded-xl border border-slate-300 px-3 py-2.5 bg-white text-slate-700 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                >
+                    <option value="">ทั้งหมด</option>
+                    <option value="PENDING">รอตรวจ</option>
+                    <option value="OK">ผ่าน</option>
+                    <option value="NG">ไม่ผ่าน</option>
+                </select>
+            </div>
+
+
+            <!-- Customer -->
+            <div>
+                <label class="block text-sm font-semibold text-slate-700 mb-1.5">
+                    Customer
+                </label>
+
+                <select
+                    id="userFilterCustomer"
+                    onchange="applyUserDashboardFilters()"
+                    class="w-full rounded-xl border border-slate-300 px-3 py-2.5 bg-white text-slate-700 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                >
+                    <option value="">ทั้งหมด</option>
+                </select>
+            </div>
+
+
+            <!-- Search -->
+            <div>
+                <label class="block text-sm font-semibold text-slate-700 mb-1.5">
+                    ค้นหา
+                </label>
+
+                <div class="relative">
+                    <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+
+                    <input
+                        type="text"
+                        id="userFilterSearch"
+                        oninput="applyUserDashboardFilters()"
+                        placeholder="Part No. / FA No."
+                        class="w-full rounded-xl border border-slate-300 pl-10 pr-3 py-2.5 text-slate-700 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    >
+                </div>
+            </div>
+
+        </div>
+
+
+        <!-- Clear Filter -->
+        <div class="mt-4 flex justify-end">
+
+            <button
+                type="button"
+                onclick="clearUserDashboardFilters()"
+                class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-slate-600 hover:bg-slate-100 transition"
+            >
+                <i class="fas fa-undo"></i>
+                ล้างตัวกรอง
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- ========================================== -->
+    <!-- JOB LIST -->
+    <!-- ========================================== -->
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+
+        <!-- Header -->
+        <div class="px-5 py-4 border-b border-slate-200 flex items-center justify-between">
+
+            <div>
+                <h2 class="font-bold text-slate-800">
+                    สถานะงานของฉัน
+                </h2>
+
+                <p class="text-sm text-slate-500 mt-0.5">
+                    ผลการตรวจสอบจาก Admin
+                </p>
+            </div>
+
+            <span
+                id="userDashboardResultCount"
+                class="text-sm font-semibold text-slate-500"
+            >
+                0 รายการ
+            </span>
+
+        </div>
+
+
+        <!-- Table -->
+        <div class="overflow-x-auto">
+
+            <table class="w-full min-w-[900px]">
+
+                <thead class="bg-slate-50 border-b border-slate-200">
+
+                    <tr>
+
+                        <th class="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase">
+                            วันที่
+                        </th>
+
+                        <th class="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase">
+                            หัวข้องาน
+                        </th>
+
+                        <th class="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase">
+                            FA / Diecut No.
+                        </th>
+
+                        <th class="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase">
+                            Customer
+                        </th>
+
+                        <th class="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase">
+                            Part No.
+                        </th>
+
+                        <th class="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase">
+                            ผู้ส่งงาน
+                        </th>
+
+                        <th class="px-4 py-3 text-center text-xs font-bold text-slate-500 uppercase">
+                            สถานะ
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="userDashboardTableBody">
+
+                    <tr>
+                        <td colspan="7" class="px-4 py-12 text-center text-slate-400">
+
+                            <i class="fas fa-inbox text-4xl mb-3"></i>
+
+                            <p class="font-medium">
+                                ยังไม่มีข้อมูล
+                            </p>
+
+                        </td>
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</section>
 
         <!-- VIEW 4: ADMIN DASHBOARD VIEW -->
         <section id="viewAdminDashboard" class="space-y-6 hidden">
@@ -1483,16 +1862,45 @@ function populateMachineCategories() {
         }
 
         function showView(viewId) {
-            ['viewUserDeptSelect', 'viewUserDeptSelect', 'viewUserForm', 'viewAdminDashboard'].forEach(id => {
-                const el = document.getElementById(id);
-                if (el) el.classList.add('hidden');
-            });
-            const target = document.getElementById(viewId);
-            if (target) target.classList.remove('hidden');
 
-            // Scroll to top
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+    // ==========================================
+    // HIDE ALL MAIN VIEWS
+    // ==========================================
+    [
+        'viewUserDeptSelect',
+        'viewUserForm',
+        'viewUserDashboard',
+        'viewAdminDashboard'
+    ].forEach(id => {
+
+        const el = document.getElementById(id);
+
+        if (el) {
+            el.classList.add('hidden');
         }
+
+    });
+
+
+    // ==========================================
+    // SHOW TARGET VIEW
+    // ==========================================
+    const target = document.getElementById(viewId);
+
+    if (target) {
+        target.classList.remove('hidden');
+    }
+
+
+    // ==========================================
+    // SCROLL TO TOP
+    // ==========================================
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+    });
+
+}
 
         function showLoader(text = 'กำลังประมวลผลข้อมูล...') {
             document.getElementById('loaderText').innerText = text;
@@ -2008,6 +2416,496 @@ function populateMachineCategories() {
 }
         }
 
+        // ==========================================
+// USER DASHBOARD
+// ==========================================
+function loadUserDashboard() {
+
+    console.log('Loading User Dashboard...');
+
+    // ใช้ข้อมูลชุดเดียวกับ Admin Dashboard
+    const records = Array.isArray(allJobRecords)
+        ? allJobRecords
+        : [];
+
+    // ==========================================
+    // UPDATE KPI
+    // ==========================================
+
+    const total = records.length;
+
+    const passed = records.filter(r =>
+        String(r.inspectionResult || '').toUpperCase() === 'OK'
+    ).length;
+
+    const failed = records.filter(r =>
+        String(r.inspectionResult || '').toUpperCase() === 'NG'
+    ).length;
+
+    const pending = records.filter(r =>
+        !String(r.inspectionResult || '').trim()
+    ).length;
+
+
+    // ==========================================
+    // SHOW KPI
+    // ==========================================
+
+    const totalEl = document.getElementById('userKpiTotal');
+    const pendingEl = document.getElementById('userKpiPending');
+    const passedEl = document.getElementById('userKpiPassed');
+    const failedEl = document.getElementById('userKpiFailed');
+
+    if (totalEl) {
+        totalEl.textContent = total;
+    }
+
+    if (pendingEl) {
+        pendingEl.textContent = pending;
+    }
+
+    if (passedEl) {
+        passedEl.textContent = passed;
+    }
+
+    if (failedEl) {
+        failedEl.textContent = failed;
+    }
+
+
+    // ==========================================
+    // CUSTOMER FILTER
+    // ==========================================
+
+    const customerSelect =
+        document.getElementById('userFilterCustomer');
+
+    if (customerSelect) {
+
+        // เก็บค่าปัจจุบันไว้
+        const currentValue = customerSelect.value;
+
+        // ดึง Customer จากข้อมูลทั้งหมด
+        const customers = [
+            ...new Set(
+                records
+                    .map(r => String(r.customer || '').trim())
+                    .filter(Boolean)
+            )
+        ].sort();
+
+        // สร้าง Options ใหม่
+        customerSelect.innerHTML =
+            '<option value="">ทั้งหมด</option>';
+
+        customers.forEach(customer => {
+
+            const option = document.createElement('option');
+
+            option.value = customer;
+            option.textContent = customer;
+
+            customerSelect.appendChild(option);
+
+        });
+
+        // คืนค่าที่เลือกไว้
+        if (customers.includes(currentValue)) {
+            customerSelect.value = currentValue;
+        }
+
+    }
+
+
+    // ==========================================
+    // APPLY FILTER
+    // ==========================================
+
+    applyUserDashboardFilters();
+
+}
+
+        // ==========================================
+// USER DASHBOARD FILTER
+// ==========================================
+function applyUserDashboardFilters() {
+
+    // ==========================================
+    // GET ALL RECORDS
+    // ==========================================
+    const records = Array.isArray(allJobRecords)
+        ? allJobRecords
+        : [];
+
+
+    // ==========================================
+    // GET FILTER VALUES
+    // ==========================================
+    const subtopic =
+        (document.getElementById('userFilterSubtopic')?.value || '')
+        .trim();
+
+    const status =
+        (document.getElementById('userFilterStatus')?.value || '')
+        .trim();
+
+    const customer =
+        (document.getElementById('userFilterCustomer')?.value || '')
+        .trim();
+
+    const search =
+        (document.getElementById('userFilterSearch')?.value || '')
+        .trim()
+        .toLowerCase();
+
+
+    // ==========================================
+    // FILTER RECORDS
+    // ==========================================
+    const filtered = records.filter(r => {
+
+        // --------------------------------------
+        // SUBTOPIC
+        // --------------------------------------
+        if (subtopic) {
+
+            if (String(r.subtopic || '').trim() !== subtopic) {
+                return false;
+            }
+
+        }
+
+
+        // --------------------------------------
+        // STATUS
+        // --------------------------------------
+        if (status) {
+
+            const result =
+                String(r.inspectionResult || '')
+                .trim()
+                .toUpperCase();
+
+            if (status === 'PENDING' && result !== '') {
+                return false;
+            }
+
+            if (status === 'OK' && result !== 'OK') {
+                return false;
+            }
+
+            if (status === 'NG' && result !== 'NG') {
+                return false;
+            }
+
+        }
+
+
+        // --------------------------------------
+        // CUSTOMER
+        // --------------------------------------
+        if (customer) {
+
+            if (String(r.customer || '').trim() !== customer) {
+                return false;
+            }
+
+        }
+
+        // --------------------------------------
+        // SEARCH
+        // --------------------------------------
+        if (search) {
+
+            const partNo =
+                String(r.partNo || '').toLowerCase();
+
+            const faNo =
+                String(r.faNo || '').toLowerCase();
+
+            const diecutNo =
+                String(r.diecutNo || '').toLowerCase();
+
+            const sender =
+                String(
+                    r.jobSender ||
+                    r.mouldSender ||
+                    ''
+                ).toLowerCase();
+
+
+            const match =
+                partNo.includes(search) ||
+                faNo.includes(search) ||
+                diecutNo.includes(search) ||
+                sender.includes(search);
+
+
+            if (!match) {
+                return false;
+            }
+
+        }
+
+
+        return true;
+
+    });
+
+
+    // ==========================================
+    // RENDER TABLE
+    // ==========================================
+    renderUserDashboardTable(filtered);
+
+
+    // ==========================================
+    // UPDATE RESULT COUNT
+    // ==========================================
+    const countEl =
+        document.getElementById('userDashboardResultCount');
+
+    if (countEl) {
+
+        countEl.textContent =
+            `${filtered.length} รายการ`;
+
+    }
+
+}
+
+        // ==========================================
+// RENDER USER DASHBOARD TABLE
+// ==========================================
+function renderUserDashboardTable(records) {
+
+    const tbody =
+        document.getElementById('userDashboardTableBody');
+
+    if (!tbody) {
+        return;
+    }
+
+
+    // ==========================================
+    // NO DATA
+    // ==========================================
+    if (!Array.isArray(records) || records.length === 0) {
+
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="7" class="px-4 py-12 text-center text-slate-400">
+
+                    <div class="flex flex-col items-center justify-center">
+
+                        <div class="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center mb-4">
+                            <i class="fas fa-inbox text-2xl text-slate-400"></i>
+                        </div>
+
+                        <p class="font-semibold text-slate-600">
+                            ไม่พบข้อมูล
+                        </p>
+
+                        <p class="text-sm text-slate-400 mt-1">
+                            ลองเปลี่ยนตัวกรองหรือค้นหาใหม่
+                        </p>
+
+                    </div>
+
+                </td>
+            </tr>
+        `;
+
+        return;
+    }
+
+
+    // ==========================================
+    // RENDER ROWS
+    // ==========================================
+    tbody.innerHTML = records.map(record => {
+
+        // --------------------------------------
+        // DATE
+        // --------------------------------------
+        const userDate =
+            record.userDate ||
+            record.date ||
+            '-';
+
+
+        // --------------------------------------
+        // SUBTOPIC
+        // --------------------------------------
+        const subtopic =
+            record.subtopic ||
+            '-';
+
+
+        // --------------------------------------
+        // FA / DIECUT NUMBER
+        // --------------------------------------
+        const jobNumber =
+            record.faNo ||
+            record.diecutNo ||
+            '-';
+
+
+        // --------------------------------------
+        // CUSTOMER
+        // --------------------------------------
+        const customer =
+            record.customer ||
+            '-';
+
+
+        // --------------------------------------
+        // PART NUMBER
+        // --------------------------------------
+        const partNo =
+            record.partNo ||
+            '-';
+
+
+        // --------------------------------------
+        // SENDER
+        // --------------------------------------
+        const sender =
+            record.jobSender ||
+            record.mouldSender ||
+            '-';
+
+
+        // --------------------------------------
+        // INSPECTION RESULT
+        // --------------------------------------
+        const result =
+            String(record.inspectionResult || '')
+            .trim()
+            .toUpperCase();
+
+
+        // ======================================
+        // STATUS BADGE
+        // ======================================
+        let statusBadge = '';
+
+
+        if (result === 'OK') {
+
+            statusBadge = `
+                <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-100 text-emerald-700 text-xs font-bold whitespace-nowrap">
+                    <i class="fas fa-check-circle"></i>
+                    ผ่าน
+                </span>
+            `;
+
+        } else if (result === 'NG') {
+
+            statusBadge = `
+                <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-red-100 text-red-700 text-xs font-bold whitespace-nowrap">
+                    <i class="fas fa-times-circle"></i>
+                    ไม่ผ่าน
+                </span>
+            `;
+
+        } else {
+
+            statusBadge = `
+                <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-100 text-amber-700 text-xs font-bold whitespace-nowrap">
+                    <i class="fas fa-clock"></i>
+                    รอตรวจ
+                </span>
+            `;
+
+        }
+
+
+        // ======================================
+        // RETURN TABLE ROW
+        // ======================================
+        return `
+            <tr class="border-b border-slate-100 hover:bg-slate-50 transition">
+
+                <!-- DATE -->
+                <td class="px-4 py-4 text-sm text-slate-600 whitespace-nowrap">
+                    ${escapeHtmlUserDashboard(userDate)}
+                </td>
+
+
+                <!-- SUBTOPIC -->
+                <td class="px-4 py-4">
+
+                    <div class="font-semibold text-slate-800 text-sm">
+                        ${escapeHtmlUserDashboard(subtopic)}
+                    </div>
+
+                </td>
+
+
+                <!-- FA / DIECUT NO -->
+                <td class="px-4 py-4 text-sm font-medium text-slate-700 whitespace-nowrap">
+                    ${escapeHtmlUserDashboard(jobNumber)}
+                </td>
+
+
+                <!-- CUSTOMER -->
+                <td class="px-4 py-4 text-sm text-slate-600">
+                    ${escapeHtmlUserDashboard(customer)}
+                </td>
+
+
+                <!-- PART NO -->
+                <td class="px-4 py-4 text-sm font-semibold text-slate-700 whitespace-nowrap">
+                    ${escapeHtmlUserDashboard(partNo)}
+                </td>
+
+
+                <!-- SENDER -->
+                <td class="px-4 py-4 text-sm text-slate-600">
+                    ${escapeHtmlUserDashboard(sender)}
+                </td>
+
+
+                <!-- STATUS -->
+                <td class="px-4 py-4 text-center">
+                    ${statusBadge}
+                </td>
+
+            </tr>
+        `;
+
+    }).join('');
+
+}
+
+        // ==========================================
+// ESCAPE HTML
+// ==========================================
+function escapeHtmlUserDashboard(value) {
+
+    return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+
+        // ==========================================
+// GET USER / JOB OWNER
+// ==========================================
+function getUserDashboardOwner(record) {
+
+    return String(
+        record.jobSender ||
+        record.mouldSender ||
+        record.jigSender ||
+        ''
+    ).trim();
+
+}
+
         function refreshDashboardData() {
             showLoader('กำลังอัปเดตข้อมูลจาก Google Sheets...');
             loadDashboardData().finally(() => {
@@ -2310,7 +3208,8 @@ function populateMachineCategories() {
                     rec.remark = remark;
                 }
                 applyFilters();
-                closeModal('modalAdminInspection');
+loadUserDashboard();
+closeModal('modalAdminInspection');
                 showToast('บันทึกผลตรวจสอบเรียบร้อย (โหมดจำลองระบบ)', 'success');
             }
         }
