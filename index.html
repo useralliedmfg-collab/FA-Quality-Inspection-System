@@ -1427,6 +1427,10 @@ main {
                             สถานะ
                         </th>
 
+                        <th class="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase">
+                            REMARK
+                        </th>
+
                     </tr>
 
                 </thead>
@@ -3044,6 +3048,14 @@ function renderUserDashboardTable(records) {
                 <td class="px-4 py-4 text-center">
                     ${statusBadge}
                 </td>
+
+                <td class="px-4 py-4 text-sm text-slate-600 min-w-[220px]">
+    ${
+        remark
+            ? escapeHtmlUserDashboard(remark)
+            : '<span class="text-slate-300">-</span>'
+    }
+</td>
                 
                 <td class="px-4 py-4 text-sm min-w-[220px]">
     ${
