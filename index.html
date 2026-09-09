@@ -1329,7 +1329,7 @@ main {
 
             <button
                 type="button"
-                onclick="clearUserDashboardFilters()"
+                onclick="clearUserDashboardFilters();"
                 class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-slate-600 hover:bg-slate-100 transition"
             >
                 <i class="fas fa-undo"></i>
@@ -2614,6 +2614,66 @@ async function refreshUserDashboard() {
         }
 
     }
+
+}
+
+        // ==========================================
+// CLEAR USER DASHBOARD FILTERS
+// ==========================================
+function clearUserDashboardFilters() {
+
+    // ==========================================
+    // CLEAR SUBTOPIC
+    // ==========================================
+    const subtopic =
+        document.getElementById('userFilterSubtopic');
+
+    if (subtopic) {
+        subtopic.value = '';
+    }
+
+    // ==========================================
+    // CLEAR STATUS
+    // ==========================================
+    const status =
+        document.getElementById('userFilterStatus');
+
+    if (status) {
+        status.value = '';
+    }
+
+    // ==========================================
+    // CLEAR CUSTOMER
+    // ==========================================
+    const customer =
+        document.getElementById('userFilterCustomer');
+
+    if (customer) {
+        customer.value = '';
+    }
+
+    // ==========================================
+    // CLEAR SEARCH
+    // ==========================================
+    const search =
+        document.getElementById('userFilterSearch');
+
+    if (search) {
+        search.value = '';
+    }
+
+    // ==========================================
+    // SHOW ALL DATA
+    // ==========================================
+    applyUserDashboardFilters();
+
+    // ==========================================
+    // NOTIFICATION
+    // ==========================================
+    showToast(
+        'ล้างตัวกรองเรียบร้อยแล้ว',
+        'success'
+    );
 
 }
 
