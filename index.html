@@ -1369,7 +1369,7 @@ main {
 
         // MASTER DROPDOWN OPTIONS
         const DROPDOWN_DATA = {
-            customers: ['CUSTOMER A', 'CUSTOMER B', 'CUSTOMER C', 'CUSTOMER D', 'AMS SPECIAL'],
+            customers: [],
             referDiecuts: ['REF-001', 'REF-002', 'REF-003', 'REF-004'],
             mouldSenders: ['วิศวกร Mould 1', 'วิศวกร Mould 2', 'ช่างพิมพ์ A'],
             jigSenders: ['ช่าง JIG 1', 'ช่าง JIG 2', 'Engineer A'],
@@ -1380,13 +1380,43 @@ main {
             }
         };
 
+// ========================================
+// โหลดข้อมูล Customer จาก Google Sheet
+// ========================================
+        async function loadCustomerData() {
+    try {
+        const response = await fetch(SCRIPT_URL, {
+            method: 'POST',
+            body: JSON.stringify({
+                action: 'getCustomers'
+            })
+        });
+
+        const result = await response.json();
+
+        if (result.success && Array.isArray(result.customers)) {
+            DROPDOWN_DATA.customers = result.customers;
+            console.log('Customer data loaded:', DROPDOWN_DATA.customers);
+        } else {
+            console.error('ไม่สามารถโหลด Customer ได้');
+            DROPDOWN_DATA.customers = [];
+        }
+
+    } catch (error) {
+        console.error('Error loading Customer:', error);
+        DROPDOWN_DATA.customers = [];
+    }
+}
+
         // INITIALIZATION ON LOAD
-        window.onload = function() {
-            startLiveClock();
-            checkAdminSession();
-            // Automatically attempt fetching data or initialize
-            loadDashboardData();
-        };
+        window.onload = async function() {
+    startLiveClock();
+    checkAdminSession();
+
+    await loadCustomerData();
+
+    loadDashboardData();
+};
 
         function startLiveClock() {
             setInterval(() => {
