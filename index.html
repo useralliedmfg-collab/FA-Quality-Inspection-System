@@ -3056,22 +3056,6 @@ function renderUserDashboardTable(records) {
             : '<span class="text-slate-300">-</span>'
     }
 </td>
-                
-                <td class="px-4 py-4 text-sm min-w-[220px]">
-    ${
-        result === 'NG' && remark
-            ? `
-                <div class="font-semibold text-red-600 mb-1">
-                    REMARK (หมายเหตุ)
-                </div>
-
-                <div class="text-slate-600 whitespace-normal">
-                    ${escapeHtmlUserDashboard(remark)}
-                </div>
-              `
-            : '<span class="text-slate-300">-</span>'
-    }
-</td>
 
             </tr>
         `;
