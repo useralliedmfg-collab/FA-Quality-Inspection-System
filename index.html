@@ -1132,8 +1132,8 @@ main {
 
             <!-- Refresh Button -->
             <button
-                type="button"
-                onclick="loadUserDashboard()"
+    type="button"
+    onclick="refreshUserDashboard();"
                 class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-700 font-semibold shadow-sm hover:bg-slate-50 transition"
             >
                 <i class="fas fa-sync-alt"></i>
@@ -2398,23 +2398,63 @@ function populateMachineCategories() {
         }
 
         async function loadDashboardData() {
-            try {
-                const response = await fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                    body: JSON.stringify({ action: 'getDashboardData' })
-                });
 
-                const res = await response.json();
-                if (res.success && Array.isArray(res.records)) {
-    allJobRecords = res.records;
-    populateCustomerFilterOptions();
-    applyFilters();
-}
-            } catch (err) {
-    console.warn('Could not fetch GAS data:', err);
-}
+    try {
+
+        const response = await fetch(SCRIPT_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'text/plain;charset=utf-8'
+            },
+            body: JSON.stringify({
+                action: 'getDashboardData'
+            })
+        });
+
+        const res = await response.json();
+
+        if (res.success && Array.isArray(res.records)) {
+
+            // ==========================================
+            // UPDATE DATA
+            // ==========================================
+            allJobRecords = res.records;
+
+            // ==========================================
+            // UPDATE ADMIN DASHBOARD
+            // ==========================================
+            populateCustomerFilterOptions();
+            applyFilters();
+
+            // ==========================================
+            // UPDATE USER DASHBOARD
+            // ==========================================
+            if (document.getElementById('viewUserDashboard')) {
+                loadUserDashboard();
+            }
+
+            return true;
+
+        } else {
+
+            throw new Error(
+                res.message || 'ไม่สามารถโหลดข้อมูลได้'
+            );
+
         }
+
+    } catch (err) {
+
+        console.error(
+            'Could not fetch GAS data:',
+            err
+        );
+
+        throw err;
+
+    }
+
+}
 
         // ==========================================
 // USER DASHBOARD
@@ -2522,6 +2562,58 @@ function loadUserDashboard() {
     // ==========================================
 
     applyUserDashboardFilters();
+}
+
+        // ==========================================
+// REFRESH USER DASHBOARD DATA
+// ==========================================
+async function refreshUserDashboard() {
+
+    console.log('Refreshing User Dashboard...');
+
+    const btn = document.querySelector(
+        '#viewUserDashboard button[onclick*="refreshUserDashboard"]'
+    );
+
+    const originalHtml = btn ? btn.innerHTML : '';
+
+    if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = `
+            <i class="fa-solid fa-spinner fa-spin mr-1.5"></i>
+            กำลังรีเฟรช...
+        `;
+    }
+
+    try {
+
+        await loadDashboardData();
+        
+        showToast(
+            'รีเฟรชข้อมูลเรียบร้อยแล้ว',
+            'success'
+        );
+
+    } catch (error) {
+
+        console.error(
+            'Refresh User Dashboard Error:',
+            error
+        );
+
+        showToast(
+            'ไม่สามารถรีเฟรชข้อมูลได้',
+            'error'
+        );
+
+    } finally {
+
+        if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = originalHtml;
+        }
+
+    }
 
 }
 
