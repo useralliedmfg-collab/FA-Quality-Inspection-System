@@ -3112,12 +3112,22 @@ function renderUserDashboardTable(records) {
                 </td>
 
 
-                <!-- STATUS -->
-                <td class="px-4 py-4 text-center">
-                    ${statusBadge}
-                </td>
+               <!-- STATUS -->
+<td class="px-4 py-4 text-center">
+    ${statusBadge}
+</td>
 
-                <td class="px-4 py-4 text-sm min-w-[180px]">
+<!-- REMARK -->
+<td class="px-4 py-4 text-sm text-slate-600 min-w-[220px]">
+    ${
+        remark
+            ? escapeHtmlUserDashboard(remark)
+            : '<span class="text-slate-300">-</span>'
+    }
+</td>
+
+<!-- ชื่อผู้รับ -->
+<td class="px-4 py-4 text-sm min-w-[180px]">
     ${
         subtopic === 'DIECUT INSPECTION' && result === 'OK'
             ? `
@@ -3131,14 +3141,6 @@ function renderUserDashboardTable(records) {
                     <option value="วิชัย">วิชัย</option>
                 </select>
               `
-            : '<span class="text-slate-300">-</span>'
-    }
-</td>
-
-                <td class="px-4 py-4 text-sm text-slate-600 min-w-[220px]">
-    ${
-        remark
-            ? escapeHtmlUserDashboard(remark)
             : '<span class="text-slate-300">-</span>'
     }
 </td>
