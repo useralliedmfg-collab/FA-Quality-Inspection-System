@@ -2901,12 +2901,10 @@ function renderUserDashboardTable(records) {
         // --------------------------------------
         // DATE
         // --------------------------------------
-        const userDate =
-            record.userDate ||
-            record.date ||
-            '-';
-
-
+        const userDate = formatUserDashboardDate(
+    record.userDate || record.date
+);
+        
         // --------------------------------------
         // SUBTOPIC
         // --------------------------------------
@@ -3064,6 +3062,29 @@ function escapeHtmlUserDashboard(value) {
         .replace(/"/g, '&quot;')
         .replace(/'/g, '&#039;');
 }
+
+        // ==========================================
+// FORMAT USER DASHBOARD DATE
+// ==========================================
+function formatUserDashboardDate(value) {
+
+    if (!value) {
+        return '-';
+    }
+
+    const text = String(value);
+
+    // ISO date: YYYY-MM-DD
+    const match = text.match(/^(\d{4})-(\d{2})-(\d{2})/);
+
+    if (match) {
+        return `${match[3]}-${match[2]}-${match[1]}`;
+    }
+
+    return text;
+
+}
+        
 
         // ==========================================
 // GET USER / JOB OWNER
