@@ -893,7 +893,7 @@ main {
 
     <button
         type="button"
-        onclick="showView('viewUserDashboard'); loadUserDashboard();"
+        onclick="openUserDashboard();"
         class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-2xl p-5 shadow-lg hover:shadow-xl transition-all duration-200"
     >
 
@@ -1429,6 +1429,10 @@ main {
 
                         <th class="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase">
                             REMARK
+                        </th>
+
+                        <th class="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase whitespace-nowrap">
+                            ชื่อผู้รับ
                         </th>
 
                     </tr>
@@ -2481,6 +2485,100 @@ function populateMachineCategories() {
 
 }
 
+        async function saveReceiverName(recordId, receiverName) {
+
+    if (!receiverName) {
+        return;
+    }
+
+    try {
+
+        const response = await fetch(SCRIPT_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'text/plain;charset=utf-8'
+            },
+            body: JSON.stringify({
+                action: 'updateReceiverName',
+                data: {
+                    id: recordId,
+                    receiverName: receiverName
+                }
+            })
+        });
+
+        const res = await response.json();
+
+        if (res.success) {
+
+            // อัปเดตข้อมูลในหน้า Dashboard ทันที
+            const record = allJobRecords.find(
+                r => String(r.id) === String(recordId)
+            );
+
+            if (record) {
+                record.receiverName = receiverName;
+            }
+
+            showToast(
+                'บันทึกชื่อผู้รับเรียบร้อยแล้ว',
+                'success'
+            );
+
+        } else {
+
+            showToast(
+                'ไม่สามารถบันทึกชื่อผู้รับได้: ' +
+                (res.message || ''),
+                'error'
+            );
+
+        }
+
+    } catch (error) {
+
+        console.error(
+            'saveReceiverName Error:',
+            error
+        );
+
+        showToast(
+            'เกิดข้อผิดพลาดในการบันทึกชื่อผู้รับ',
+            'error'
+        );
+    }
+}
+
+        // ==========================================
+// OPEN USER DASHBOARD
+// ==========================================
+async function openUserDashboard() {
+
+    // แสดงหน้า Dashboard ก่อน
+    showView('viewUserDashboard');
+
+    // โหลดข้อมูลล่าสุดจาก Google Sheet
+    try {
+
+        showLoader('กำลังโหลดข้อมูล Dashboard...');
+
+        await loadDashboardData();
+
+        hideLoader();
+
+    } catch (error) {
+
+        hideLoader();
+
+        console.error('Open User Dashboard Error:', error);
+
+        showToast(
+            'ไม่สามารถโหลดข้อมูล Dashboard ได้',
+            'error'
+        );
+    }
+}
+
         // ==========================================
 // USER DASHBOARD
 // ==========================================
@@ -3044,15 +3142,44 @@ function renderUserDashboardTable(records) {
                 </td>
 
 
-                <!-- STATUS -->
-                <td class="px-4 py-4 text-center">
-                    ${statusBadge}
-                </td>
+               <!-- STATUS -->
+<td class="px-4 py-4 text-center">
+    ${statusBadge}
+</td>
 
-                <td class="px-4 py-4 text-sm text-slate-600 min-w-[220px]">
+<!-- REMARK -->
+<td class="px-4 py-4 text-sm text-slate-600 min-w-[220px]">
     ${
         remark
             ? escapeHtmlUserDashboard(remark)
+            : '<span class="text-slate-300">-</span>'
+    }
+</td>
+
+<!-- ชื่อผู้รับ -->
+<td class="px-4 py-4 text-sm min-w-[180px]">
+    ${
+        subtopic === 'DIECUT INSPECTION' && result === 'OK'
+            ? `
+                <select
+    class="w-full px-3 py-2 border border-slate-200 rounded-lg bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+    onchange="saveReceiverName('${escapeHtmlUserDashboard(record.id)}', this.value)"
+>
+    <option value="">เลือกชื่อผู้รับ</option>
+
+    <option value="สมชาย" ${record.receiverName === 'สมชาย' ? 'selected' : ''}>
+        สมชาย
+    </option>
+
+    <option value="สมหญิง" ${record.receiverName === 'สมหญิง' ? 'selected' : ''}>
+        สมหญิง
+    </option>
+
+    <option value="วิชัย" ${record.receiverName === 'วิชัย' ? 'selected' : ''}>
+        วิชัย
+    </option>
+</select>
+              `
             : '<span class="text-slate-300">-</span>'
     }
 </td>
