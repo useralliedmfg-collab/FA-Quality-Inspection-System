@@ -2426,7 +2426,10 @@ function populateMachineCategories() {
             showView('viewUserDeptSelect');
         }
 
-        async function loadDashboardData() {
+      async function loadDashboardData() {
+
+    console.log('========== DASHBOARD LOAD START ==========');
+    console.log('SCRIPT_URL:', SCRIPT_URL);
 
     try {
 
@@ -2440,39 +2443,132 @@ function populateMachineCategories() {
             })
         });
 
-        const res = await response.json();
+        console.log('HTTP Status:', response.status);
+        console.log('HTTP OK:', response.ok);
+
+        const responseText = await response.text();
+
+        console.log('RAW GAS RESPONSE:', responseText);
+
+        if (!responseText) {
+            throw new Error('GAS ไม่ส่งข้อมูลกลับมา');
+        }
+
+        let res;
+
+        try {
+            res = JSON.parse(responseText);
+        } catch (jsonError) {
+
+            console.error('JSON PARSE ERROR:', jsonError);
+
+            throw new Error(
+                'ข้อมูลจาก GAS ไม่ใช่ JSON: ' +
+                responseText.substring(0, 500)
+            );
+        }
+
+        console.log('PARSED GAS RESPONSE:', res);
+        console.log('success:', res.success);
+        console.log('records:', res.records);
+        console.log(
+            'records count:',
+            Array.isArray(res.records) ? res.records.length : 'NOT ARRAY'
+        );
 
         if (res.success && Array.isArray(res.records)) {
 
             // ==========================================
-            // UPDATE DATA
+            // UPDATE GLOBAL DATA
             // ==========================================
+
             allJobRecords = res.records;
 
-            // ==========================================
-            // UPDATE ADMIN DASHBOARD
-            // ==========================================
-            populateCustomerFilterOptions();
-            applyFilters();
+            console.log(
+                'allJobRecords updated:',
+                allJobRecords.length
+            );
 
             // ==========================================
-            // UPDATE USER DASHBOARD
+            // ADMIN DASHBOARD
             // ==========================================
-            if (document.getElementById('viewUserDashboard')) {
-                loadUserDashboard();
+
+            try {
+
+                populateCustomerFilterOptions();
+
+                applyFilters();
+
+                console.log(
+                    'Admin Dashboard rendered successfully'
+                );
+
+            } catch (adminError) {
+
+                console.error(
+                    'ADMIN DASHBOARD ERROR:',
+                    adminError
+                );
+
             }
+
+            // ==========================================
+            // USER DASHBOARD
+            // ==========================================
+
+            try {
+
+                if (
+                    document.getElementById('viewUserDashboard')
+                ) {
+
+                    loadUserDashboard();
+
+                    console.log(
+                        'User Dashboard rendered successfully'
+                    );
+
+                } else {
+
+                    console.warn(
+                        'viewUserDashboard element not found'
+                    );
+
+                }
+
+            } catch (userError) {
+
+                console.error(
+                    'USER DASHBOARD ERROR:',
+                    userError
+                );
+
+            }
+
+            console.log(
+                '========== DASHBOARD LOAD SUCCESS =========='
+            );
 
             return true;
 
         } else {
 
-            throw new Error(
-                res.message || 'ไม่สามารถโหลดข้อมูลได้'
+            console.error(
+                'GAS returned unsuccessful response:',
+                res
             );
 
+            throw new Error(
+                res.message ||
+                'GAS ไม่สามารถโหลดข้อมูล Dashboard ได้'
+            );
         }
 
     } catch (err) {
+
+        console.error(
+            '========== DASHBOARD LOAD ERROR =========='
+        );
 
         console.error(
             'Could not fetch GAS data:',
@@ -2480,9 +2576,7 @@ function populateMachineCategories() {
         );
 
         throw err;
-
     }
-
 }
 
         async function saveReceiverName(recordId, receiverName) {
