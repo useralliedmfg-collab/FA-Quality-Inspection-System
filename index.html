@@ -2674,6 +2674,81 @@ async function openUserDashboard() {
 }
 
         // ==========================================
+// SORT RECORDS BY DATE / TIME
+// ล่าสุด → เก่าสุด
+// ==========================================
+function sortRecordsLatestFirst(records) {
+
+    if (!Array.isArray(records)) {
+        return [];
+    }
+
+    return records.sort((a, b) => {
+
+        const getDateTime = (record) => {
+
+            const dateText = String(
+                record?.userDate ||
+                record?.date ||
+                ''
+            ).trim();
+
+            const timeText = String(
+                record?.userTime ||
+                record?.time ||
+                ''
+            ).trim();
+
+            // รองรับวันที่รูปแบบ DD/MM/YYYY
+            const parts = dateText.split('/');
+
+            if (parts.length === 3) {
+
+                const day = parseInt(parts[0], 10);
+                const month = parseInt(parts[1], 10);
+                const year = parseInt(parts[2], 10);
+
+                if (
+                    !isNaN(day) &&
+                    !isNaN(month) &&
+                    !isNaN(year)
+                ) {
+
+                    let hour = 0;
+                    let minute = 0;
+                    let second = 0;
+
+                    const timeParts = timeText.split(':');
+
+                    if (timeParts.length >= 2) {
+                        hour = parseInt(timeParts[0], 10) || 0;
+                        minute = parseInt(timeParts[1], 10) || 0;
+                        second = parseInt(timeParts[2], 10) || 0;
+                    }
+
+                    return new Date(
+                        year,
+                        month - 1,
+                        day,
+                        hour,
+                        minute,
+                        second
+                    ).getTime();
+                }
+            }
+
+            return 0;
+        };
+
+        const dateA = getDateTime(a);
+        const dateB = getDateTime(b);
+
+        return dateB - dateA;
+    });
+}
+        
+
+        // ==========================================
 // USER DASHBOARD
 // ==========================================
 function loadUserDashboard() {
@@ -3021,6 +3096,10 @@ function applyUserDashboardFilters() {
 
     });
 
+    // ==========================================
+    // SORT: ล่าสุด → เก่าสุด
+    // ==========================================
+    sortRecordsLatestFirst(filtered);
 
     // ==========================================
     // RENDER TABLE
@@ -3586,6 +3665,11 @@ function applyFilters() {
         // RENDER TABLE
         // ================================
         renderAdminTable();
+
+        // ==========================================
+        // SORT: ล่าสุด → เก่าสุด
+        // ==========================================
+        sortRecordsLatestFirst(filteredRecords);
 
         console.log(
             '========== ADMIN FILTER SUCCESS =========='
