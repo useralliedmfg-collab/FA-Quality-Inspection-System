@@ -3003,8 +3003,8 @@ function renderUserDashboardTable(records) {
         // --------------------------------------
         // DATE
         // --------------------------------------
-        const userDate = formatUserDashboardDate(
-    record.userDate || record.date
+        const userDate = formatDashboardDate(
+    record.userDate
 );
         
         // --------------------------------------
@@ -3204,28 +3204,24 @@ function escapeHtmlUserDashboard(value) {
         .replace(/'/g, '&#039;');
 }
 
-        // ==========================================
-// FORMAT USER DASHBOARD DATE
 // ==========================================
-function formatUserDashboardDate(value) {
+// FORMAT DASHBOARD DATE
+// ใช้วันที่จาก Google Sheet โดยตรง
+// ไม่แปลง Timezone เพื่อป้องกันวันที่คลาดเคลื่อน
+// ==========================================
+function formatDashboardDate(value) {
 
-    if (!value) {
+    if (
+        value === null ||
+        value === undefined ||
+        value === ''
+    ) {
         return '-';
     }
 
-    const text = String(value);
+    return String(value).trim();
 
-    // ISO date: YYYY-MM-DD
-    const match = text.match(/^(\d{4})-(\d{2})-(\d{2})/);
-
-    if (match) {
-        return `${match[3]}-${match[2]}-${match[1]}`;
-    }
-
-    return text;
-
-}
-        
+}     
 
         // ==========================================
 // GET USER / JOB OWNER
@@ -3312,23 +3308,24 @@ function getUserDashboardOwner(record) {
                     if (!matchPart && !matchFa && !matchSender) return false;
                 }
 
-                if (startDate) {
-                    // userDate format: dd/MM/yyyy
-                    const parts = (r.userDate || '').split('/');
-                    if (parts.length === 3) {
-                        const recDate = `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
-                        if (recDate < startDate) return false;
-                    }
-                }
+               const recordDate =
+    getDateForFilter(r.userDate);
 
-                if (endDate) {
-                    const parts = (r.userDate || '').split('/');
-                    if (parts.length === 3) {
-                        const recDate = `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
-                        if (recDate > endDate) return false;
-                    }
-                }
+if (startDate && recordDate) {
 
+    if (recordDate < startDate) {
+        return false;
+    }
+
+}
+
+if (endDate && recordDate) {
+
+    if (recordDate > endDate) {
+        return false;
+    }
+
+}
                 return true;
             });
 
@@ -3395,9 +3392,14 @@ function getUserDashboardOwner(record) {
 
                 tr.innerHTML = `
                     <td class="p-3 text-slate-600 whitespace-nowrap">
-                        <div class="font-medium">${record.userDate || '-'}</div>
-                        <div class="text-[10px] text-slate-400">${record.userTime || ''}</div>
-                    </td>
+    <div class="font-medium">
+        ${formatDashboardDate(record.userDate)}
+    </div>
+
+    <div class="text-[10px] text-slate-400">
+        ${record.userTime || ''}
+    </div>
+</td>
                     <td class="p-3 whitespace-nowrap">${deptBadge}</td>
                     <td class="p-3 font-medium text-slate-800 whitespace-nowrap">${record.subtopic}</td>
                     <td class="p-3 font-bold text-slate-900 whitespace-nowrap">${record.faNo || record.diecutNo || '-'}</td>
@@ -3429,7 +3431,14 @@ function getUserDashboardOwner(record) {
             // Populate Read-only User Detail Grid
             const grid = document.getElementById('modalUserDetailGrid');
             grid.innerHTML = `
-                <div><span class="text-slate-400">วันที่ส่งงาน:</span> <p class="font-semibold text-slate-800">${record.userDate} ${record.userTime}</p></div>
+                <div>
+    <span class="text-slate-400">วันที่ส่งงาน:</span>
+
+    <p class="font-semibold text-slate-800">
+        ${formatDashboardDate(record.userDate)}
+        ${record.userTime || ''}
+    </p>
+</div>
                 <div><span class="text-slate-400">FA NO / DIECUT NO:</span> <p class="font-bold text-sky-700">${record.faNo || record.diecutNo || '-'}</p></div>
                 <div><span class="text-slate-400">CUSTOMER:</span> <p class="font-semibold text-slate-800">${record.customer}</p></div>
                 <div><span class="text-slate-400">PART NO:</span> <p class="font-semibold text-slate-800">${record.partNo}</p></div>
