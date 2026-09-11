@@ -893,7 +893,7 @@ main {
 
     <button
         type="button"
-        onclick="showView('viewUserDashboard'); loadUserDashboard();"
+        onclick="openUserDashboard();"
         class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-2xl p-5 shadow-lg hover:shadow-xl transition-all duration-200"
     >
 
@@ -2544,6 +2544,36 @@ function populateMachineCategories() {
 
         showToast(
             'เกิดข้อผิดพลาดในการบันทึกชื่อผู้รับ',
+            'error'
+        );
+    }
+}
+
+        // ==========================================
+// OPEN USER DASHBOARD
+// ==========================================
+async function openUserDashboard() {
+
+    // แสดงหน้า Dashboard ก่อน
+    showView('viewUserDashboard');
+
+    // โหลดข้อมูลล่าสุดจาก Google Sheet
+    try {
+
+        showLoader('กำลังโหลดข้อมูล Dashboard...');
+
+        await loadDashboardData();
+
+        hideLoader();
+
+    } catch (error) {
+
+        hideLoader();
+
+        console.error('Open User Dashboard Error:', error);
+
+        showToast(
+            'ไม่สามารถโหลดข้อมูล Dashboard ได้',
             'error'
         );
     }
