@@ -3395,9 +3395,8 @@ function getUserDashboardOwner(record) {
 
                 tr.innerHTML = `
                     <td class="p-3 text-slate-600 whitespace-nowrap">
-                        <div class="font-medium">${record.userDate || '-'}</div>
-                        <div class="text-[10px] text-slate-400">${record.userTime || ''}</div>
-                    </td>
+    <div class="font-medium">${formatUserDashboardDate(record.userDate || record.date)}</div>
+</td>
                     <td class="p-3 whitespace-nowrap">${deptBadge}</td>
                     <td class="p-3 font-medium text-slate-800 whitespace-nowrap">${record.subtopic}</td>
                     <td class="p-3 font-bold text-slate-900 whitespace-nowrap">${record.faNo || record.diecutNo || '-'}</td>
