@@ -3380,52 +3380,227 @@ function getUserDashboardOwner(record) {
             applyFilters();
         }
 
-        function applyFilters() {
-            const dept = document.getElementById('filterDept').value;
-            const subtopic = document.getElementById('filterSubtopic').value;
-            const status = document.getElementById('filterStatus').value;
-            const customer = document.getElementById('filterCustomer').value;
-            const search = document.getElementById('filterSearch').value.trim().toLowerCase();
-            const startDate = document.getElementById('filterStartDate').value;
-            const endDate = document.getElementById('filterEndDate').value;
+function applyFilters() {
 
-            filteredRecords = allJobRecords.filter(r => {
-                if (dept && r.dept !== dept) return false;
-                if (subtopic && r.subtopic !== subtopic) return false;
-                if (status && r.status !== status) return false;
-                if (customer && r.customer !== customer) return false;
+    console.log('========== ADMIN FILTER START ==========');
+    console.log('allJobRecords:', allJobRecords);
+    console.log('allJobRecords count:', allJobRecords.length);
 
-                if (search) {
-                    const matchPart = (r.partNo || '').toLowerCase().includes(search);
-                    const matchFa = (r.faNo || '').toLowerCase().includes(search);
-                    const matchSender = (r.jobSender || r.mouldSender || '').toLowerCase().includes(search);
-                    if (!matchPart && !matchFa && !matchSender) return false;
-                }
+    try {
 
-               const recordDate =
-    getDateForFilter(r.userDate);
+        const deptEl = document.getElementById('filterDept');
+        const subtopicEl = document.getElementById('filterSubtopic');
+        const statusEl = document.getElementById('filterStatus');
+        const customerEl = document.getElementById('filterCustomer');
+        const searchEl = document.getElementById('filterSearch');
+        const startDateEl = document.getElementById('filterStartDate');
+        const endDateEl = document.getElementById('filterEndDate');
 
-if (startDate && recordDate) {
+        // ตรวจสอบ Element ก่อนใช้งาน
+        if (!deptEl ||
+            !subtopicEl ||
+            !statusEl ||
+            !customerEl ||
+            !searchEl ||
+            !startDateEl ||
+            !endDateEl) {
 
-    if (recordDate < startDate) {
-        return false;
-    }
+            console.error(
+                'ADMIN FILTER ELEMENT MISSING'
+            );
 
-}
-
-if (endDate && recordDate) {
-
-    if (recordDate > endDate) {
-        return false;
-    }
-
-}
-                return true;
+            console.error({
+                filterDept: !!deptEl,
+                filterSubtopic: !!subtopicEl,
+                filterStatus: !!statusEl,
+                filterCustomer: !!customerEl,
+                filterSearch: !!searchEl,
+                filterStartDate: !!startDateEl,
+                filterEndDate: !!endDateEl
             });
 
-            updateKPIs();
-            renderAdminTable();
+            return;
         }
+
+        const dept = deptEl.value;
+        const subtopic = subtopicEl.value;
+        const status = statusEl.value;
+        const customer = customerEl.value;
+        const search = searchEl.value
+            .trim()
+            .toLowerCase();
+
+        const startDate = startDateEl.value;
+        const endDate = endDateEl.value;
+
+        console.log('ADMIN FILTER VALUES:', {
+            dept,
+            subtopic,
+            status,
+            customer,
+            search,
+            startDate,
+            endDate
+        });
+
+        filteredRecords = allJobRecords.filter(record => {
+
+            const r = record || {};
+
+            // ================================
+            // DEPARTMENT
+            // ================================
+            if (
+                dept &&
+                String(r.dept || '').trim() !== dept
+            ) {
+                return false;
+            }
+
+            // ================================
+            // SUBTOPIC
+            // ================================
+            if (
+                subtopic &&
+                String(r.subtopic || '').trim() !== subtopic
+            ) {
+                return false;
+            }
+
+            // ================================
+            // STATUS
+            // ================================
+            if (
+                status &&
+                String(r.status || '').trim() !== status
+            ) {
+                return false;
+            }
+
+            // ================================
+            // CUSTOMER
+            // ================================
+            if (
+                customer &&
+                String(r.customer || '').trim() !== customer
+            ) {
+                return false;
+            }
+
+            // ================================
+            // SEARCH
+            // ================================
+            if (search) {
+
+                const matchPart =
+                    String(r.partNo || '')
+                        .toLowerCase()
+                        .includes(search);
+
+                const matchFa =
+                    String(r.faNo || '')
+                        .toLowerCase()
+                        .includes(search);
+
+                const matchSender =
+                    String(
+                        r.jobSender ||
+                        r.mouldSender ||
+                        r.jigSender ||
+                        ''
+                    )
+                    .toLowerCase()
+                    .includes(search);
+
+                const matchCustomer =
+                    String(r.customer || '')
+                        .toLowerCase()
+                        .includes(search);
+
+                const matchId =
+                    String(r.id || '')
+                        .toLowerCase()
+                        .includes(search);
+
+                if (
+                    !matchPart &&
+                    !matchFa &&
+                    !matchSender &&
+                    !matchCustomer &&
+                    !matchId
+                ) {
+                    return false;
+                }
+            }
+
+            // ================================
+            // DATE FILTER
+            // ================================
+            const rawDate = String(
+                r.userDate || ''
+            ).trim();
+
+            if (rawDate) {
+
+                const parts = rawDate.split('/');
+
+                if (parts.length === 3) {
+
+                    const day = parts[0].padStart(2, '0');
+                    const month = parts[1].padStart(2, '0');
+                    const year = parts[2];
+
+                    const recDate =
+                        `${year}-${month}-${day}`;
+
+                    if (
+                        startDate &&
+                        recDate < startDate
+                    ) {
+                        return false;
+                    }
+
+                    if (
+                        endDate &&
+                        recDate > endDate
+                    ) {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
+        });
+
+        console.log(
+            'ADMIN FILTER RESULT:',
+            filteredRecords.length
+        );
+
+        // ================================
+        // UPDATE KPI
+        // ================================
+        updateKPIs();
+
+        // ================================
+        // RENDER TABLE
+        // ================================
+        renderAdminTable();
+
+        console.log(
+            '========== ADMIN FILTER SUCCESS =========='
+        );
+
+    } catch (error) {
+
+        console.error(
+            '========== ADMIN FILTER ERROR =========='
+        );
+
+        console.error(error);
+
+    }
+}
 
         function resetFilters() {
             document.getElementById('filterDept').value = '';
@@ -3454,63 +3629,228 @@ if (endDate && recordDate) {
         }
 
         function renderAdminTable() {
-            const tbody = document.getElementById('adminTableBody');
-            const emptyState = document.getElementById('tableEmptyState');
-            tbody.innerHTML = '';
 
-            if (filteredRecords.length === 0) {
-                emptyState.classList.remove('hidden');
-                return;
-            } else {
-                emptyState.classList.add('hidden');
-            }
+    console.log('========== ADMIN TABLE RENDER START ==========');
+    console.log('filteredRecords:', filteredRecords);
+    console.log(
+        'filteredRecords count:',
+        Array.isArray(filteredRecords)
+            ? filteredRecords.length
+            : 'NOT ARRAY'
+    );
 
-            filteredRecords.forEach((record) => {
-                const tr = document.createElement('tr');
-                tr.className = 'hover:bg-slate-50 transition border-b border-slate-100';
+    const tbody = document.getElementById('adminTableBody');
+    const emptyState = document.getElementById('tableEmptyState');
 
-                // Status Badge styling
-                let statusBadge = '';
-                if (record.status === 'OK') {
-                    statusBadge = `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-200"><i class="fa-solid fa-circle-check mr-1"></i> OK</span>`;
-                } else if (record.status === 'NG') {
-                    statusBadge = `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-rose-100 text-rose-800 border border-rose-200"><i class="fa-solid fa-circle-xmark mr-1"></i> NG</span>`;
-                } else {
-                    statusBadge = `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800 border border-amber-200"><i class="fa-solid fa-clock mr-1"></i> รอตรวจสอบ</span>`;
-                }
+    if (!tbody) {
+        console.error('ADMIN TABLE BODY NOT FOUND: #adminTableBody');
+        return;
+    }
 
-                // Department Badge
-                const deptBadge = record.dept === 'Engineer' 
-                    ? `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-sky-100 text-sky-800">Engineer</span>`
-                    : `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800">Production</span>`;
+    if (!emptyState) {
+        console.warn('EMPTY STATE NOT FOUND: #tableEmptyState');
+    }
 
-                tr.innerHTML = `
-                    <td class="p-3 text-slate-600 whitespace-nowrap">
-    <div class="font-medium">
-        ${formatDashboardDate(record.userDate)}
-    </div>
+    tbody.innerHTML = '';
 
-    <div class="text-[10px] text-slate-400">
-        ${record.userTime || ''}
-    </div>
-</td>
-                    <td class="p-3 whitespace-nowrap">${deptBadge}</td>
-                    <td class="p-3 font-medium text-slate-800 whitespace-nowrap">${record.subtopic}</td>
-                    <td class="p-3 font-bold text-slate-900 whitespace-nowrap">${record.faNo || record.diecutNo || '-'}</td>
-                    <td class="p-3 text-slate-600 whitespace-nowrap">${record.customer || '-'}</td>
-                    <td class="p-3 font-semibold text-slate-800 whitespace-nowrap">${record.partNo || '-'}</td>
-                    <td class="p-3 text-slate-600 whitespace-nowrap">${record.jobSender || record.mouldSender || record.jigSender || '-'}</td>
-                    <td class="p-3 text-center whitespace-nowrap">${statusBadge}</td>
-                    <td class="p-3 text-center whitespace-nowrap">
-                        <button onclick="openAdminInspectionModal('${record.id}')" class="px-3 py-1 bg-sky-50 hover:bg-sky-100 text-sky-700 font-semibold rounded-lg text-xs border border-sky-200 transition">
-                            <i class="fa-solid fa-pen-to-square mr-1"></i> ตรวจงาน
-                        </button>
-                    </td>
-                `;
+    if (
+        !Array.isArray(filteredRecords) ||
+        filteredRecords.length === 0
+    ) {
 
-                tbody.appendChild(tr);
-            });
+        if (emptyState) {
+            emptyState.classList.remove('hidden');
         }
+
+        console.log('ADMIN TABLE: NO RECORDS');
+
+        return;
+    }
+
+    if (emptyState) {
+        emptyState.classList.add('hidden');
+    }
+
+    filteredRecords.forEach((record, index) => {
+
+        const r = record || {};
+
+        console.log(
+            `ADMIN TABLE RECORD ${index + 1}:`,
+            r
+        );
+
+        const tr = document.createElement('tr');
+
+        tr.className =
+            'hover:bg-slate-50 transition border-b border-slate-100';
+
+        /* =========================
+           STATUS BADGE
+           ========================= */
+
+        let statusBadge = '';
+
+        const status =
+            String(r.status || '').trim();
+
+        if (status === 'OK') {
+
+            statusBadge = `
+                <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700">
+                    <i class="fa-solid fa-circle-check"></i>
+                    OK
+                </span>
+            `;
+
+        } else if (status === 'NG') {
+
+            statusBadge = `
+                <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-rose-100 text-rose-700">
+                    <i class="fa-solid fa-circle-xmark"></i>
+                    NG
+                </span>
+            `;
+
+        } else {
+
+            statusBadge = `
+                <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-700">
+                    <i class="fa-solid fa-clock"></i>
+                    รอตรวจสอบ
+                </span>
+            `;
+        }
+
+        /* =========================
+           DEPARTMENT BADGE
+           ========================= */
+
+        let deptBadge = '';
+
+        if (r.dept === 'Engineer') {
+
+            deptBadge = `
+                <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-sky-100 text-sky-700">
+                    <i class="fa-solid fa-helmet-safety"></i>
+                    Engineer
+                </span>
+            `;
+
+        } else if (r.dept === 'Production') {
+
+            deptBadge = `
+                <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-violet-100 text-violet-700">
+                    <i class="fa-solid fa-industry"></i>
+                    Production
+                </span>
+            `;
+
+        } else {
+
+            deptBadge = `
+                <span class="text-slate-500">
+                    ${r.dept || '-'}
+                </span>
+            `;
+        }
+
+        /* =========================
+           MAIN DATA
+           ========================= */
+
+        const userDate =
+            r.userDate || '-';
+
+        const subtopic =
+            r.subtopic || '-';
+
+        const faNo =
+            r.faNo ||
+            r.diecutNo ||
+            r.jigNo ||
+            '-';
+
+        const customer =
+            r.customer || '-';
+
+        const partNo =
+            r.partNo || '-';
+
+        const sender =
+            r.jobSender ||
+            r.mouldSender ||
+            r.jigSender ||
+            '-';
+
+        const recordId =
+            r.id || '';
+
+        /* =========================
+           TABLE ROW
+           ========================= */
+
+        tr.innerHTML = `
+
+            <td class="px-4 py-3 whitespace-nowrap text-sm text-slate-600">
+                ${userDate}
+            </td>
+
+            <td class="px-4 py-3 whitespace-nowrap">
+                ${deptBadge}
+            </td>
+
+            <td class="px-4 py-3 whitespace-nowrap text-sm font-semibold text-slate-700">
+                ${subtopic}
+            </td>
+
+            <td class="px-4 py-3 whitespace-nowrap text-sm font-semibold text-slate-800">
+                ${faNo}
+            </td>
+
+            <td class="px-4 py-3 whitespace-nowrap text-sm text-slate-600">
+                ${customer}
+            </td>
+
+            <td class="px-4 py-3 whitespace-nowrap text-sm text-slate-600">
+                ${partNo}
+            </td>
+
+            <td class="px-4 py-3 whitespace-nowrap text-sm text-slate-600">
+                ${sender}
+            </td>
+
+            <td class="px-4 py-3 whitespace-nowrap">
+                ${statusBadge}
+            </td>
+
+            <td class="px-4 py-3 whitespace-nowrap text-center">
+
+                <button
+                    type="button"
+                    onclick="openAdminInspectionModal('${recordId}')"
+                    class="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-sky-600 hover:bg-sky-700 text-white text-xs font-semibold transition shadow-sm"
+                >
+                    <i class="fa-solid fa-clipboard-check"></i>
+                    ตรวจงาน
+                </button>
+
+            </td>
+        `;
+
+        tbody.appendChild(tr);
+    });
+
+    console.log(
+        'ADMIN TABLE RENDERED:',
+        tbody.children.length,
+        'rows'
+    );
+
+    console.log(
+        '========== ADMIN TABLE RENDER SUCCESS =========='
+    );
+}
 
         function openAdminInspectionModal(id) {
             const record = allJobRecords.find(r => r.id === id);
