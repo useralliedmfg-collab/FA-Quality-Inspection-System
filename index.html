@@ -3505,6 +3505,7 @@ function applyFilters() {
         const subtopic = subtopicEl.value;
         const status = statusEl.value;
         const customer = customerEl.value;
+
         const search = searchEl.value
             .trim()
             .toLowerCase();
@@ -3521,6 +3522,10 @@ function applyFilters() {
             startDate,
             endDate
         });
+
+        // ==========================================
+        // FILTER DATA
+        // ==========================================
 
         filteredRecords = allJobRecords.filter(record => {
 
@@ -3625,9 +3630,14 @@ function applyFilters() {
 
                 if (parts.length === 3) {
 
-                    const day = parts[0].padStart(2, '0');
-                    const month = parts[1].padStart(2, '0');
-                    const year = parts[2];
+                    const day =
+                        parts[0].padStart(2, '0');
+
+                    const month =
+                        parts[1].padStart(2, '0');
+
+                    const year =
+                        parts[2];
 
                     const recDate =
                         `${year}-${month}-${day}`;
@@ -3652,8 +3662,18 @@ function applyFilters() {
         });
 
         console.log(
-            'ADMIN FILTER RESULT:',
+            'ADMIN FILTER RESULT BEFORE SORT:',
             filteredRecords.length
+        );
+
+        // ==========================================
+        // SORT: ล่าสุด → เก่าสุด
+        // ==========================================
+        sortRecordsLatestFirst(filteredRecords);
+
+        console.log(
+            'ADMIN FILTER RESULT AFTER SORT:',
+            filteredRecords
         );
 
         // ================================
@@ -3665,11 +3685,6 @@ function applyFilters() {
         // RENDER TABLE
         // ================================
         renderAdminTable();
-
-        // ==========================================
-        // SORT: ล่าสุด → เก่าสุด
-        // ==========================================
-        sortRecordsLatestFirst(filteredRecords);
 
         console.log(
             '========== ADMIN FILTER SUCCESS =========='
@@ -3685,7 +3700,6 @@ function applyFilters() {
 
     }
 }
-
         function resetFilters() {
             document.getElementById('filterDept').value = '';
             document.getElementById('filterSubtopic').value = '';
