@@ -3003,9 +3003,7 @@ function renderUserDashboardTable(records) {
         // --------------------------------------
         // DATE
         // --------------------------------------
-        const userDate = formatUserDashboardDate(
-    record.userDate || record.date
-);
+        const userDate = record.userDate || record.date || '-';
         
         // --------------------------------------
         // SUBTOPIC
@@ -3395,7 +3393,7 @@ function getUserDashboardOwner(record) {
 
                 tr.innerHTML = `
                     <td class="p-3 text-slate-600 whitespace-nowrap">
-    <div class="font-medium">${formatUserDashboardDate(record.userDate || record.date)}</div>
+    <div class="font-medium">${record.userDate || '-'}</div>
 </td>
                     <td class="p-3 whitespace-nowrap">${deptBadge}</td>
                     <td class="p-3 font-medium text-slate-800 whitespace-nowrap">${record.subtopic}</td>
