@@ -1596,15 +1596,6 @@ main {
                     </div>
                 </div>
 
-                <!-- Date Range Filters -->
-                <div class="flex flex-wrap items-center gap-3 pt-2 border-t border-slate-100 text-xs">
-                    <span class="font-semibold text-slate-600">ช่วงวันที่ส่งงาน:</span>
-                    <input type="date" id="filterStartDate" onchange="applyFilters()" class="rounded-lg border-slate-300 text-xs p-1.5 border">
-                    <span>ถึง</span>
-                    <input type="date" id="filterEndDate" onchange="applyFilters()" class="rounded-lg border-slate-300 text-xs p-1.5 border">
-                </div>
-            </div>
-
             <!-- DATA TABLE CARD -->
             <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
                 <div class="px-5 py-4 border-b border-slate-200 flex items-center justify-between">
@@ -3472,8 +3463,6 @@ function applyFilters() {
         const statusEl = document.getElementById('filterStatus');
         const customerEl = document.getElementById('filterCustomer');
         const searchEl = document.getElementById('filterSearch');
-        const startDateEl = document.getElementById('filterStartDate');
-        const endDateEl = document.getElementById('filterEndDate');
 
         // ตรวจสอบ Element ก่อนใช้งาน
         if (!deptEl ||
@@ -3481,8 +3470,6 @@ function applyFilters() {
             !statusEl ||
             !customerEl ||
             !searchEl ||
-            !startDateEl ||
-            !endDateEl) {
 
             console.error(
                 'ADMIN FILTER ELEMENT MISSING'
@@ -3494,8 +3481,6 @@ function applyFilters() {
                 filterStatus: !!statusEl,
                 filterCustomer: !!customerEl,
                 filterSearch: !!searchEl,
-                filterStartDate: !!startDateEl,
-                filterEndDate: !!endDateEl
             });
 
             return;
@@ -3520,7 +3505,6 @@ function applyFilters() {
             customer,
             search,
             startDate,
-            endDate
         });
 
         // ==========================================
@@ -3616,48 +3600,7 @@ function applyFilters() {
                     return false;
                 }
             }
-
-            // ================================
-            // DATE FILTER
-            // ================================
-            const rawDate = String(
-                r.userDate || ''
-            ).trim();
-
-            if (rawDate) {
-
-                const parts = rawDate.split('/');
-
-                if (parts.length === 3) {
-
-                    const day =
-                        parts[0].padStart(2, '0');
-
-                    const month =
-                        parts[1].padStart(2, '0');
-
-                    const year =
-                        parts[2];
-
-                    const recDate =
-                        `${year}-${month}-${day}`;
-
-                    if (
-                        startDate &&
-                        recDate < startDate
-                    ) {
-                        return false;
-                    }
-
-                    if (
-                        endDate &&
-                        recDate > endDate
-                    ) {
-                        return false;
-                    }
-                }
-            }
-
+            
             return true;
         });
 
@@ -3706,8 +3649,6 @@ function applyFilters() {
             document.getElementById('filterStatus').value = '';
             document.getElementById('filterCustomer').value = '';
             document.getElementById('filterSearch').value = '';
-            document.getElementById('filterStartDate').value = '';
-            document.getElementById('filterEndDate').value = '';
             onFilterDeptChange();
         }
 
