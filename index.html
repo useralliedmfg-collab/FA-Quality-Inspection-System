@@ -3465,26 +3465,25 @@ function applyFilters() {
         const searchEl = document.getElementById('filterSearch');
 
         // ตรวจสอบ Element ก่อนใช้งาน
-        if (!deptEl ||
-            !subtopicEl ||
-            !statusEl ||
-            !customerEl ||
-            !searchEl ||
+if (
+    !deptEl ||
+    !subtopicEl ||
+    !statusEl ||
+    !customerEl ||
+    !searchEl
+) {
+    console.error('ADMIN FILTER ELEMENT MISSING');
 
-            console.error(
-                'ADMIN FILTER ELEMENT MISSING'
-            );
+    console.error({
+        filterDept: !!deptEl,
+        filterSubtopic: !!subtopicEl,
+        filterStatus: !!statusEl,
+        filterCustomer: !!customerEl,
+        filterSearch: !!searchEl
+    });
 
-            console.error({
-                filterDept: !!deptEl,
-                filterSubtopic: !!subtopicEl,
-                filterStatus: !!statusEl,
-                filterCustomer: !!customerEl,
-                filterSearch: !!searchEl,
-            });
-
-            return;
-        }
+    return;
+}
 
         const dept = deptEl.value;
         const subtopic = subtopicEl.value;
