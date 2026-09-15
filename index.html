@@ -4239,8 +4239,41 @@ console.log('ADMIN FILTER VALUES:', {
         const userDate =
             r.userDate || '-';
 
-        const subtopic =
-            r.subtopic || '-';
+        let subtopicBadge = '';
+
+const subtopic = String(r.subtopic || '').trim();
+
+if (subtopic === 'FIRST SHOT FA') {
+    subtopicBadge = `
+        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-sky-100 text-sky-700">
+            ${subtopic}
+        </span>
+    `;
+} else if (subtopic === 'FA FG') {
+    subtopicBadge = `
+        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-violet-100 text-violet-700">
+            ${subtopic}
+        </span>
+    `;
+} else if (subtopic === 'DIECUT INSPECTION') {
+    subtopicBadge = `
+        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-orange-100 text-orange-700">
+            ${subtopic}
+        </span>
+    `;
+} else if (subtopic === 'JIG FA') {
+    subtopicBadge = `
+        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-pink-100 text-pink-700">
+            ${subtopic}
+        </span>
+    `;
+} else {
+    subtopicBadge = `
+        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-600">
+            ${subtopic || '-'}
+        </span>
+    `;
+}
 
         const customer =
             r.customer || '-';
@@ -4271,9 +4304,9 @@ console.log('ADMIN FILTER VALUES:', {
                 ${deptBadge}
             </td>
 
-            <td class="px-4 py-3 whitespace-nowrap text-sm font-semibold text-slate-700">
-                ${subtopic}
-            </td>
+            <td class="px-4 py-3 whitespace-nowrap">
+    ${subtopicBadge}
+</td>
 
             <td class="px-4 py-3 whitespace-nowrap text-sm text-slate-600">
                 ${customer}
