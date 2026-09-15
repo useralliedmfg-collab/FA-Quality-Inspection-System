@@ -1989,13 +1989,20 @@ function populateMachineCategories() {
 }
 
         // INITIALIZATION ON LOAD
-        window.onload = async function() {
+        window.onload = function() {
+
     startLiveClock();
     checkAdminSession();
 
-    await loadCustomerData();
-    await loadMachineData();
+    // โหลดข้อมูลที่ใช้กับ Form แบบ Background
+    Promise.all([
+        loadCustomerData(),
+        loadMachineData()
+    ]).catch(error => {
+        console.error('Background Master Data Error:', error);
+    });
 
+    // โหลด Dashboard ทันที
     loadDashboardData();
 };
 
@@ -2915,13 +2922,53 @@ async function confirmReceiverName(recordId, button) {
 // ==========================================
 async function openUserDashboard() {
 
-    // แสดงหน้า Dashboard ก่อน
+    // ==========================================
+    // แสดง Dashboard ทันที
+    // ==========================================
     showView('viewUserDashboard');
 
-    // โหลดข้อมูลล่าสุดจาก Google Sheet
+
+    // ==========================================
+    // ถ้ามีข้อมูลอยู่แล้ว
+    // ให้แสดงทันที ไม่ต้องรอ GAS
+    // ==========================================
+    if (
+        Array.isArray(allJobRecords) &&
+        allJobRecords.length > 0
+    ) {
+
+        console.log(
+            'User Dashboard: ใช้ข้อมูลที่โหลดไว้แล้ว',
+            allJobRecords.length
+        );
+
+        loadUserDashboard();
+
+        // ==========================================
+        // โหลดข้อมูลใหม่แบบ Background
+        // ไม่บล็อกหน้า Dashboard
+        // ==========================================
+        loadDashboardData()
+            .catch(error => {
+                console.error(
+                    'Background Dashboard Refresh Error:',
+                    error
+                );
+            });
+
+        return;
+    }
+
+
+    // ==========================================
+    // กรณียังไม่มีข้อมูล
+    // ต้องโหลดครั้งแรก
+    // ==========================================
     try {
 
-        showLoader('กำลังโหลดข้อมูล Dashboard...');
+        showLoader(
+            'กำลังโหลดข้อมูล Dashboard...'
+        );
 
         await loadDashboardData();
 
@@ -2931,7 +2978,10 @@ async function openUserDashboard() {
 
         hideLoader();
 
-        console.error('Open User Dashboard Error:', error);
+        console.error(
+            'Open User Dashboard Error:',
+            error
+        );
 
         showToast(
             'ไม่สามารถโหลดข้อมูล Dashboard ได้',
