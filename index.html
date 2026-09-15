@@ -2735,7 +2735,7 @@ function selectReceiverName(recordId, receiverName) {
 // ยืนยันชื่อผู้รับ
 // หลังยืนยันแล้วจะเปลี่ยนไม่ได้
 // ==========================================
-async function confirmReceiverName(recordId) {
+async function confirmReceiverName(recordId, button) {
 
     const receiverName =
         pendingReceiverNames[recordId];
@@ -2750,12 +2750,10 @@ async function confirmReceiverName(recordId) {
         return;
     }
 
-
     // หา Record ปัจจุบัน
     const record = allJobRecords.find(
         r => String(r.id) === String(recordId)
     );
-
 
     // ถ้ามีชื่อผู้รับอยู่แล้ว = ล็อกถาวร
     if (record && record.receiverName) {
@@ -2770,6 +2768,30 @@ async function confirmReceiverName(recordId) {
         renderUserDashboardTable(allJobRecords);
 
         return;
+    }
+
+
+    // ==========================================
+    // แสดงสถานะกำลังบันทึก
+    // ==========================================
+    if (button) {
+
+        button.disabled = true;
+
+        button.classList.remove(
+            'bg-emerald-600',
+            'hover:bg-emerald-700'
+        );
+
+        button.classList.add(
+            'bg-slate-400',
+            'cursor-not-allowed'
+        );
+
+        button.innerHTML = `
+            <i class="fas fa-spinner fa-spin"></i>
+            <span>กำลังบันทึก...</span>
+        `;
     }
 
 
@@ -2809,16 +2831,13 @@ async function confirmReceiverName(recordId) {
                 record.receiverName = receiverName;
             }
 
-
             // ล้างค่าที่รอยืนยัน
             delete pendingReceiverNames[recordId];
-
 
             // แสดงผลใหม่
             renderUserDashboardTable(
                 allJobRecords
             );
-
 
             showToast(
                 'ยืนยันชื่อผู้รับเรียบร้อยแล้ว',
@@ -2828,12 +2847,32 @@ async function confirmReceiverName(recordId) {
 
         } else {
 
+            // ถ้าบันทึกไม่สำเร็จ ให้คืนปุ่มกลับมา
+            if (button) {
+
+                button.disabled = false;
+
+                button.classList.remove(
+                    'bg-slate-400',
+                    'cursor-not-allowed'
+                );
+
+                button.classList.add(
+                    'bg-emerald-600',
+                    'hover:bg-emerald-700'
+                );
+
+                button.innerHTML = `
+                    <i class="fas fa-check"></i>
+                    <span>ยืนยันชื่อผู้รับ</span>
+                `;
+            }
+
             showToast(
                 'ไม่สามารถยืนยันชื่อผู้รับได้: ' +
                 (res.message || ''),
                 'error'
             );
-
         }
 
 
@@ -2844,13 +2883,33 @@ async function confirmReceiverName(recordId) {
             error
         );
 
+        // ถ้าเกิด Error ให้คืนปุ่มกลับมา
+        if (button) {
+
+            button.disabled = false;
+
+            button.classList.remove(
+                'bg-slate-400',
+                'cursor-not-allowed'
+            );
+
+            button.classList.add(
+                'bg-emerald-600',
+                'hover:bg-emerald-700'
+            );
+
+            button.innerHTML = `
+                <i class="fas fa-check"></i>
+                <span>ยืนยันชื่อผู้รับ</span>
+            `;
+        }
+
         showToast(
             'เกิดข้อผิดพลาดในการยืนยันชื่อผู้รับ',
             'error'
         );
     }
 }
-
         // ==========================================
 // OPEN USER DASHBOARD
 // ==========================================
@@ -3574,7 +3633,7 @@ function renderUserDashboardTable(records) {
                                 ? `
                                     <button
                                         type="button"
-                                        onclick="confirmReceiverName('${escapeHtmlUserDashboard(record.id)}')"
+                                        onclick="confirmReceiverName('${escapeHtmlUserDashboard(record.id)}', this)"
                                         class="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition shadow-sm"
                                     >
                                         <i class="fas fa-check"></i>
