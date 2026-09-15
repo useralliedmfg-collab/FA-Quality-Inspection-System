@@ -4303,14 +4303,17 @@ console.log('ADMIN FILTER VALUES:', {
             r.partNo || '-';
 
         const sender =
-            r.jobSender ||
-            r.mouldSender ||
-            r.jigSender ||
-            '-';
+    r.jobSender ||
+    r.mouldSender ||
+    r.jigSender ||
+    '-';
 
-        const recordId =
-            r.id || '';
+const receiverName =
+    r.receiverName || '-';
 
+const recordId =
+    r.id || '';
+        
         /* =========================
            TABLE ROW
            ========================= */
@@ -4342,12 +4345,20 @@ console.log('ADMIN FILTER VALUES:', {
             </td>
 
             <td class="px-4 py-3 whitespace-nowrap text-sm text-slate-600">
-                ${sender}
-            </td>
+    ${sender}
+</td>
 
-            <td class="px-4 py-3 whitespace-nowrap">
-                ${statusBadge}
-            </td>
+<td class="px-4 py-3 whitespace-nowrap text-sm font-semibold text-slate-700">
+    ${
+        r.subtopic === 'DIECUT INSPECTION'
+            ? receiverName
+            : '-'
+    }
+</td>
+
+<td class="px-4 py-3 whitespace-nowrap">
+    ${statusBadge}
+</td>
 
             <td class="px-4 py-3 whitespace-nowrap text-center">
 
