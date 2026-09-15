@@ -2730,7 +2730,6 @@ function selectReceiverName(recordId, receiverName) {
     renderUserDashboardTable(allJobRecords);
 }
 
-
 // ==========================================
 // ยืนยันชื่อผู้รับ
 // หลังยืนยันแล้วจะเปลี่ยนไม่ได้
@@ -2773,6 +2772,43 @@ async function confirmReceiverName(recordId) {
     }
 
 
+    // ==========================================
+    // หา Button ของรายการนี้
+    // ==========================================
+    const card = document.querySelector(
+        `[data-record-id="${recordId}"]`
+    );
+
+    const confirmBtn = card
+        ? card.querySelector(
+            'button[data-confirm-receiver="true"]'
+        )
+        : null;
+
+
+    // ==========================================
+    // Loading เล็ก ๆ
+    // ==========================================
+    const originalButtonHtml =
+        confirmBtn ? confirmBtn.innerHTML : '';
+
+
+    if (confirmBtn) {
+
+        confirmBtn.disabled = true;
+
+        confirmBtn.innerHTML = `
+            <i class="fas fa-spinner fa-spin mr-1.5"></i>
+            กำลังบันทึก...
+        `;
+
+        confirmBtn.classList.add(
+            'opacity-70',
+            'cursor-not-allowed'
+        );
+    }
+
+
     try {
 
         const response = await fetch(
@@ -2804,7 +2840,9 @@ async function confirmReceiverName(recordId) {
 
         if (res.success) {
 
-            // บันทึกชื่อผู้รับในข้อมูลหน้า Dashboard
+            // ==========================================
+            // อัปเดตข้อมูลใน Dashboard ทันที
+            // ==========================================
             if (record) {
                 record.receiverName = receiverName;
             }
@@ -2814,7 +2852,9 @@ async function confirmReceiverName(recordId) {
             delete pendingReceiverNames[recordId];
 
 
-            // แสดงผลใหม่
+            // ==========================================
+            // แสดงผลใหม่แบบสมูท
+            // ==========================================
             renderUserDashboardTable(
                 allJobRecords
             );
@@ -2834,6 +2874,19 @@ async function confirmReceiverName(recordId) {
                 'error'
             );
 
+
+            // คืนปุ่มเดิม
+            if (confirmBtn) {
+                confirmBtn.disabled = false;
+                confirmBtn.innerHTML =
+                    originalButtonHtml;
+
+                confirmBtn.classList.remove(
+                    'opacity-70',
+                    'cursor-not-allowed'
+                );
+            }
+
         }
 
 
@@ -2844,10 +2897,24 @@ async function confirmReceiverName(recordId) {
             error
         );
 
+
         showToast(
             'เกิดข้อผิดพลาดในการยืนยันชื่อผู้รับ',
             'error'
         );
+
+
+        // คืนปุ่มเดิม
+        if (confirmBtn) {
+            confirmBtn.disabled = false;
+            confirmBtn.innerHTML =
+                originalButtonHtml;
+
+            confirmBtn.classList.remove(
+                'opacity-70',
+                'cursor-not-allowed'
+            );
+        }
     }
 }
 
