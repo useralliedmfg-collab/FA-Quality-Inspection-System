@@ -2573,95 +2573,84 @@ function populateMachineCategories() {
       async function loadDashboardData() {
 
     console.log('========== DASHBOARD LOAD START ==========');
+    console.log('SCRIPT_URL:', SCRIPT_URL);
 
     try {
 
-        const res = await new Promise((resolve, reject) => {
-
-            google.script.run
-                .withSuccessHandler(resolve)
-                .withFailureHandler(reject)
-                .getDashboardData();
-
+        const response = await fetch(SCRIPT_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'text/plain;charset=utf-8'
+            },
+            body: JSON.stringify({
+                action: 'getDashboardData'
+            })
         });
 
-        console.log('GAS RESPONSE:', res);
+        console.log('HTTP Status:', response.status);
+        console.log('HTTP OK:', response.ok);
 
-        if (!res || !res.success || !Array.isArray(res.records)) {
-            throw new Error(
-                res?.message || 'ไม่สามารถโหลดข้อมูล Dashboard ได้'
-            );
+        const responseText = await response.text();
+
+        console.log('RAW GAS RESPONSE:', responseText);
+
+        if (!responseText) {
+            throw new Error('GAS ไม่ส่งข้อมูลกลับมา');
         }
 
-        // ==========================================
-        // UPDATE GLOBAL DATA
-        // ==========================================
-
-        allJobRecords = res.records;
-
-        console.log(
-            'allJobRecords updated:',
-            allJobRecords.length
-        );
-
-
-        // ==========================================
-        // ADMIN DASHBOARD
-        // ==========================================
+        let res;
 
         try {
+            res = JSON.parse(responseText);
+        } catch (jsonError) {
+
+            console.error('JSON PARSE ERROR:', jsonError);
+
+            throw new Error(
+                'ข้อมูลจาก GAS ไม่ใช่ JSON: ' +
+                responseText.substring(0, 500)
+            );
+
+        }
+
+        console.log('PARSED GAS RESPONSE:', res);
+
+        if (
+            res.success &&
+            Array.isArray(res.records)
+        ) {
+
+            allJobRecords = res.records;
+
+            console.log(
+                'allJobRecords updated:',
+                allJobRecords.length
+            );
 
             populateCustomerFilterOptions();
 
             applyFilters();
 
-            console.log(
-                'Admin Dashboard rendered successfully'
-            );
-
-        } catch (adminError) {
-
-            console.error(
-                'ADMIN DASHBOARD ERROR:',
-                adminError
-            );
-
-        }
-
-
-        // ==========================================
-        // USER DASHBOARD
-        // ==========================================
-
-        try {
-
             if (
                 document.getElementById('viewUserDashboard')
             ) {
-
                 loadUserDashboard();
-
-                console.log(
-                    'User Dashboard rendered successfully'
-                );
-
             }
 
-        } catch (userError) {
+            console.log(
+                '========== DASHBOARD LOAD SUCCESS =========='
+            );
 
-            console.error(
-                'USER DASHBOARD ERROR:',
-                userError
+            return true;
+
+        } else {
+
+            throw new Error(
+                res.message ||
+                'GAS ไม่สามารถโหลดข้อมูล Dashboard ได้'
             );
 
         }
-
-
-        console.log(
-            '========== DASHBOARD LOAD SUCCESS =========='
-        );
-
-        return true;
 
     } catch (error) {
 
@@ -2669,15 +2658,13 @@ function populateMachineCategories() {
             '========== DASHBOARD LOAD ERROR =========='
         );
 
-        console.error(
-            'Could not load GAS data:',
-            error
-        );
+        console.error(error);
 
         throw error;
 
     }
 }
+        
         // ==========================================
 // ชื่อผู้รับที่เลือก แต่ยังไม่ได้ยืนยัน
 // ==========================================
