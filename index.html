@@ -2191,12 +2191,13 @@ function populateMachineCategories() {
     </label>
 
     <input
-        type="text"
-        name="referNoDiecut"
-        required
-        placeholder="กรอก REFER NO DIECUT"
-        class="w-full text-xs rounded-lg border-slate-300 p-2.5 border"
-    >
+    type="text"
+    name="referNoDiecut"
+    required
+    oninput="this.value = this.value.toUpperCase()"
+    placeholder="กรอก REFER NO DIECUT"
+    class="w-full text-xs rounded-lg border-slate-300 p-2.5 border"
+>
 </div>
 
 <div>
