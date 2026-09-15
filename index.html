@@ -2573,156 +2573,111 @@ function populateMachineCategories() {
       async function loadDashboardData() {
 
     console.log('========== DASHBOARD LOAD START ==========');
-    console.log('SCRIPT_URL:', SCRIPT_URL);
 
     try {
 
-        const response = await fetch(SCRIPT_URL, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'text/plain;charset=utf-8'
-            },
-            body: JSON.stringify({
-                action: 'getDashboardData'
-            })
+        const res = await new Promise((resolve, reject) => {
+
+            google.script.run
+                .withSuccessHandler(resolve)
+                .withFailureHandler(reject)
+                .getDashboardData();
+
         });
 
-        console.log('HTTP Status:', response.status);
-        console.log('HTTP OK:', response.ok);
+        console.log('GAS RESPONSE:', res);
 
-        const responseText = await response.text();
-
-        console.log('RAW GAS RESPONSE:', responseText);
-
-        if (!responseText) {
-            throw new Error('GAS ไม่ส่งข้อมูลกลับมา');
-        }
-
-        let res;
-
-        try {
-            res = JSON.parse(responseText);
-        } catch (jsonError) {
-
-            console.error('JSON PARSE ERROR:', jsonError);
-
+        if (!res || !res.success || !Array.isArray(res.records)) {
             throw new Error(
-                'ข้อมูลจาก GAS ไม่ใช่ JSON: ' +
-                responseText.substring(0, 500)
+                res?.message || 'ไม่สามารถโหลดข้อมูล Dashboard ได้'
             );
         }
 
-        console.log('PARSED GAS RESPONSE:', res);
-        console.log('success:', res.success);
-        console.log('records:', res.records);
+        // ==========================================
+        // UPDATE GLOBAL DATA
+        // ==========================================
+
+        allJobRecords = res.records;
+
         console.log(
-            'records count:',
-            Array.isArray(res.records) ? res.records.length : 'NOT ARRAY'
+            'allJobRecords updated:',
+            allJobRecords.length
         );
 
-        if (res.success && Array.isArray(res.records)) {
 
-            // ==========================================
-            // UPDATE GLOBAL DATA
-            // ==========================================
+        // ==========================================
+        // ADMIN DASHBOARD
+        // ==========================================
 
-            allJobRecords = res.records;
+        try {
 
-            console.log(
-                'allJobRecords updated:',
-                allJobRecords.length
-            );
+            populateCustomerFilterOptions();
 
-            // ==========================================
-            // ADMIN DASHBOARD
-            // ==========================================
-
-            try {
-
-                populateCustomerFilterOptions();
-
-                applyFilters();
-
-                console.log(
-                    'Admin Dashboard rendered successfully'
-                );
-
-            } catch (adminError) {
-
-                console.error(
-                    'ADMIN DASHBOARD ERROR:',
-                    adminError
-                );
-
-            }
-
-            // ==========================================
-            // USER DASHBOARD
-            // ==========================================
-
-            try {
-
-                if (
-                    document.getElementById('viewUserDashboard')
-                ) {
-
-                    loadUserDashboard();
-
-                    console.log(
-                        'User Dashboard rendered successfully'
-                    );
-
-                } else {
-
-                    console.warn(
-                        'viewUserDashboard element not found'
-                    );
-
-                }
-
-            } catch (userError) {
-
-                console.error(
-                    'USER DASHBOARD ERROR:',
-                    userError
-                );
-
-            }
+            applyFilters();
 
             console.log(
-                '========== DASHBOARD LOAD SUCCESS =========='
+                'Admin Dashboard rendered successfully'
             );
 
-            return true;
-
-        } else {
+        } catch (adminError) {
 
             console.error(
-                'GAS returned unsuccessful response:',
-                res
+                'ADMIN DASHBOARD ERROR:',
+                adminError
             );
 
-            throw new Error(
-                res.message ||
-                'GAS ไม่สามารถโหลดข้อมูล Dashboard ได้'
-            );
         }
 
-    } catch (err) {
+
+        // ==========================================
+        // USER DASHBOARD
+        // ==========================================
+
+        try {
+
+            if (
+                document.getElementById('viewUserDashboard')
+            ) {
+
+                loadUserDashboard();
+
+                console.log(
+                    'User Dashboard rendered successfully'
+                );
+
+            }
+
+        } catch (userError) {
+
+            console.error(
+                'USER DASHBOARD ERROR:',
+                userError
+            );
+
+        }
+
+
+        console.log(
+            '========== DASHBOARD LOAD SUCCESS =========='
+        );
+
+        return true;
+
+    } catch (error) {
 
         console.error(
             '========== DASHBOARD LOAD ERROR =========='
         );
 
         console.error(
-            'Could not fetch GAS data:',
-            err
+            'Could not load GAS data:',
+            error
         );
 
-        throw err;
+        throw error;
+
     }
 }
-
         // ==========================================
 // ชื่อผู้รับที่เลือก แต่ยังไม่ได้ยืนยัน
 // ==========================================
