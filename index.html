@@ -2771,6 +2771,20 @@ async function confirmReceiverName(recordId, button) {
         return;
     }
 
+    // ==========================================
+// SHOW LOADING
+// ==========================================
+Swal.fire({
+    title: 'กำลังบันทึกข้อมูล...',
+    text: 'กรุณารอสักครู่',
+    allowOutsideClick: false,
+    allowEscapeKey: false,
+    showConfirmButton: false,
+    didOpen: () => {
+        Swal.showLoading();
+    }
+});
+
 // ==========================================
 // Loading ปุ่มยืนยัน
 // ==========================================
@@ -2823,6 +2837,7 @@ if (button) {
 
 
         if (res.success) {
+            Swal.close();
 
             // ==========================================
             // อัปเดตข้อมูลใน Dashboard ทันที
