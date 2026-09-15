@@ -2734,7 +2734,7 @@ function selectReceiverName(recordId, receiverName) {
 // ยืนยันชื่อผู้รับ
 // หลังยืนยันแล้วจะเปลี่ยนไม่ได้
 // ==========================================
-async function confirmReceiverName(recordId) {
+async function confirmReceiverName(recordId, button) {
 
     const receiverName =
         pendingReceiverNames[recordId];
@@ -2771,43 +2771,27 @@ async function confirmReceiverName(recordId) {
         return;
     }
 
+// ==========================================
+// Loading ปุ่มยืนยัน
+// ==========================================
+const originalButtonHtml = button
+    ? button.innerHTML
+    : '';
 
-    // ==========================================
-    // หา Button ของรายการนี้
-    // ==========================================
-    const card = document.querySelector(
-        `[data-record-id="${recordId}"]`
+if (button) {
+
+    button.disabled = true;
+
+    button.innerHTML = `
+        <i class="fas fa-spinner fa-spin mr-1"></i>
+        กำลังบันทึก...
+    `;
+
+    button.classList.add(
+        'opacity-70',
+        'cursor-not-allowed'
     );
-
-    const confirmBtn = card
-        ? card.querySelector(
-            'button[data-confirm-receiver="true"]'
-        )
-        : null;
-
-
-    // ==========================================
-    // Loading เล็ก ๆ
-    // ==========================================
-    const originalButtonHtml =
-        confirmBtn ? confirmBtn.innerHTML : '';
-
-
-    if (confirmBtn) {
-
-        confirmBtn.disabled = true;
-
-        confirmBtn.innerHTML = `
-            <i class="fas fa-spinner fa-spin mr-1.5"></i>
-            กำลังบันทึก...
-        `;
-
-        confirmBtn.classList.add(
-            'opacity-70',
-            'cursor-not-allowed'
-        );
-    }
-
+}
 
     try {
 
