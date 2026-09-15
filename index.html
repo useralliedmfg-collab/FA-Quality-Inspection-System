@@ -1906,22 +1906,31 @@ main {
 // ========================================
 // โหลดข้อมูล Customer จาก Google Sheet
 // ========================================
-        async function loadCustomerData() {
+       async function loadCustomerData() {
     try {
         const response = await fetch(SCRIPT_URL, {
             method: 'POST',
+            headers: {
+                'Content-Type': 'text/plain;charset=utf-8'
+            },
             body: JSON.stringify({
                 action: 'getCustomers'
             })
         });
 
-        const result = await response.json();
+        const text = await response.text();
+        console.log('Customer API response:', text);
+
+        const result = JSON.parse(text);
 
         if (result.success && Array.isArray(result.customers)) {
-            DROPDOWN_DATA.customers = result.customers;
+            DROPDOWN_DATA.customers = result.customers
+                .map(c => String(c).trim())
+                .filter(c => c !== '');
+
             console.log('Customer data loaded:', DROPDOWN_DATA.customers);
         } else {
-            console.error('ไม่สามารถโหลด Customer ได้');
+            console.error('Customer API error:', result);
             DROPDOWN_DATA.customers = [];
         }
 
@@ -1930,7 +1939,6 @@ main {
         DROPDOWN_DATA.customers = [];
     }
 }
-
 // ========================================
 // โหลดข้อมูล Machine จาก Google Sheet
 // ========================================
@@ -2169,7 +2177,10 @@ function populateMachineCategories() {
     showView('viewUserDeptSelect');
 }
 
-        function openUserForm(dept, subtopic) {
+        async function openUserForm(dept, subtopic) {
+                if (DROPDOWN_DATA.customers.length === 0) {
+        await loadCustomerData();
+    }
             document.getElementById('inputDept').value = dept;
             document.getElementById('inputSubtopic').value = subtopic;
 
