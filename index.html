@@ -2718,14 +2718,14 @@ const pendingReceiverNames = {};
 function selectReceiverName(recordId, receiverName) {
 
     if (!receiverName) {
-        delete pendingReceiverNames[recordId];
+        delete pendingReceiverNames[String(recordId)];
 
         renderUserDashboardTable(allJobRecords);
 
         return;
     }
 
-    pendingReceiverNames[recordId] = receiverName;
+    pendingReceiverNames[String(recordId)] = receiverName;
 
     renderUserDashboardTable(allJobRecords);
 }
@@ -2736,8 +2736,14 @@ function selectReceiverName(recordId, receiverName) {
 // ==========================================
 async function confirmReceiverName(recordId, button) {
 
+    console.log('=== CONFIRM RECEIVER ===');
+    console.log('recordId:', recordId);
+    console.log('pendingReceiverNames:', pendingReceiverNames);
+
     const receiverName =
-        pendingReceiverNames[recordId];
+        pendingReceiverNames[String(recordId)];
+
+    console.log('receiverName:', receiverName);
 
     if (!receiverName) {
 
@@ -2749,63 +2755,65 @@ async function confirmReceiverName(recordId, button) {
         return;
     }
 
-
-    // หา Record ปัจจุบัน
     const record = allJobRecords.find(
         r => String(r.id) === String(recordId)
     );
 
+    console.log('record:', record);
 
-    // ถ้ามีชื่อผู้รับอยู่แล้ว = ล็อกถาวร
-    if (record && record.receiverName) {
+    if (!record) {
+
+        showToast(
+            'ไม่พบข้อมูลรายการงาน',
+            'error'
+        );
+
+        return;
+    }
+
+    // ป้องกันการยืนยันซ้ำ
+    if (record.receiverName) {
 
         showToast(
             'ชื่อผู้รับถูกยืนยันแล้ว ไม่สามารถเปลี่ยนแปลงได้',
             'error'
         );
 
-        delete pendingReceiverNames[recordId];
+        delete pendingReceiverNames[String(recordId)];
 
         renderUserDashboardTable(allJobRecords);
 
         return;
     }
 
-    // ==========================================
-// SHOW LOADING
-// ==========================================
-Swal.fire({
-    title: 'กำลังบันทึกข้อมูล...',
-    text: 'กรุณารอสักครู่',
-    allowOutsideClick: false,
-    allowEscapeKey: false,
-    showConfirmButton: false,
-    didOpen: () => {
-        Swal.showLoading();
+    const originalButtonHtml =
+        button ? button.innerHTML : '';
+
+    if (button) {
+
+        button.disabled = true;
+
+        button.innerHTML = `
+            <i class="fas fa-spinner fa-spin mr-1"></i>
+            กำลังบันทึก...
+        `;
+
+        button.classList.add(
+            'opacity-70',
+            'cursor-not-allowed'
+        );
     }
-});
 
-// ==========================================
-// Loading ปุ่มยืนยัน
-// ==========================================
-const originalButtonHtml = button
-    ? button.innerHTML
-    : '';
-
-if (button) {
-
-    button.disabled = true;
-
-    button.innerHTML = `
-        <i class="fas fa-spinner fa-spin mr-1"></i>
-        กำลังบันทึก...
-    `;
-
-    button.classList.add(
-        'opacity-70',
-        'cursor-not-allowed'
-    );
-}
+    Swal.fire({
+        title: 'กำลังบันทึกข้อมูล...',
+        text: 'กรุณารอสักครู่',
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        showConfirmButton: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
 
     try {
 
@@ -2824,7 +2832,7 @@ if (button) {
                     action: 'updateReceiverName',
 
                     data: {
-                        id: recordId,
+                        id: String(recordId),
                         receiverName: receiverName
                     }
 
@@ -2832,61 +2840,96 @@ if (button) {
             }
         );
 
+        console.log(
+            'updateReceiverName HTTP:',
+            response.status
+        );
 
-        const res = await response.json();
+        const responseText =
+            await response.text();
 
+        console.log(
+            'updateReceiverName RAW:',
+            responseText
+        );
 
-        if (res.success) {
-            Swal.close();
+        let res;
 
-            // ==========================================
-            // อัปเดตข้อมูลใน Dashboard ทันที
-            // ==========================================
-            if (record) {
-                record.receiverName = receiverName;
-            }
+        try {
 
+            res = JSON.parse(responseText);
 
-            // ล้างค่าที่รอยืนยัน
-            delete pendingReceiverNames[recordId];
+        } catch (jsonError) {
 
-
-            // ==========================================
-            // แสดงผลใหม่แบบสมูท
-            // ==========================================
-            renderUserDashboardTable(
-                allJobRecords
+            throw new Error(
+                'GAS ไม่ได้ส่ง JSON กลับมา: ' +
+                responseText
             );
-
-
-            showToast(
-                'ยืนยันชื่อผู้รับเรียบร้อยแล้ว',
-                'success'
-            );
-
-
-        } else {
-
-            showToast(
-                'ไม่สามารถยืนยันชื่อผู้รับได้: ' +
-                (res.message || ''),
-                'error'
-            );
-
-
-            // คืนปุ่มเดิม
-            if (confirmBtn) {
-                confirmBtn.disabled = false;
-                confirmBtn.innerHTML =
-                    originalButtonHtml;
-
-                confirmBtn.classList.remove(
-                    'opacity-70',
-                    'cursor-not-allowed'
-                );
-            }
 
         }
+
+        console.log(
+            'updateReceiverName RESPONSE:',
+            res
+        );
+
+        if (!res.success) {
+
+            throw new Error(
+                res.message ||
+                'ไม่สามารถบันทึกชื่อผู้รับได้'
+            );
+
+        }
+
+        // ==========================================
+        // บันทึกสำเร็จ
+        // ==========================================
+
+        Swal.close();
+
+        record.receiverName = receiverName;
+
+        delete pendingReceiverNames[String(recordId)];
+
+        renderUserDashboardTable(
+            allJobRecords
+        );
+
+        showToast(
+            'ยืนยันชื่อผู้รับเรียบร้อยแล้ว',
+            'success'
+        );
+
+    } catch (error) {
+
+        console.error(
+            'confirmReceiverName Error:',
+            error
+        );
+
+        Swal.close();
+
+        if (button) {
+
+            button.disabled = false;
+
+            button.innerHTML =
+                originalButtonHtml;
+
+            button.classList.remove(
+                'opacity-70',
+                'cursor-not-allowed'
+            );
+        }
+
+        showToast(
+            error.message ||
+            'เกิดข้อผิดพลาดในการยืนยันชื่อผู้รับ',
+            'error'
+        );
+    }
+}
 
 
     } catch (error) {
@@ -2904,16 +2947,15 @@ if (button) {
 
 
         // คืนปุ่มเดิม
-        if (confirmBtn) {
-            confirmBtn.disabled = false;
-            confirmBtn.innerHTML =
-                originalButtonHtml;
+        if (button) {
+    button.disabled = false;
+    button.innerHTML = originalButtonHtml;
 
-            confirmBtn.classList.remove(
-                'opacity-70',
-                'cursor-not-allowed'
-            );
-        }
+    button.classList.remove(
+        'opacity-70',
+        'cursor-not-allowed'
+    );
+}
     }
 }
 
@@ -3640,7 +3682,7 @@ function renderUserDashboardTable(records) {
                                 ? `
                                     <button
     type="button"
-    onclick="confirmReceiverName('${escapeHtmlUserDashboard(record.id)}', this)"
+    onclick="confirmReceiverName(${JSON.stringify(String(record.id))}, this)"
     class="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition shadow-sm"
 >
     <i class="fas fa-check"></i>
