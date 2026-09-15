@@ -4352,6 +4352,7 @@ console.log('ADMIN FILTER VALUES:', {
     </p>
 </div>
                 ${record.subtopic !== 'JIG FA' ? `<div><span class="text-slate-400">FA NO / DIECUT NO:</span> <p class="font-bold text-sky-700">${record.faNo || record.diecutNo || '-'}</p></div>` : ''}
+                ${record.subtopic === 'DIECUT INSPECTION' ? `<div><span class="text-slate-400">REFER NO DIECUT:</span> <p class="font-semibold text-slate-800">${record.referNoDiecut || '-'}</p></div>` : ''}
                 <div><span class="text-slate-400">CUSTOMER:</span> <p class="font-semibold text-slate-800">${record.customer}</p></div>
                 <div><span class="text-slate-400">PART NO:</span> <p class="font-semibold text-slate-800">${record.partNo}</p></div>
                 <div><span class="text-slate-400">REV:</span> <p class="font-semibold text-slate-800">${record.rev}</p></div>
