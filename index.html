@@ -3893,7 +3893,7 @@ function getUserDashboardOwner(record) {
 }
 
         function refreshDashboardData() {
-            showLoader('กำลังอัปเดตข้อมูลจาก Google Sheets...');
+            showLoader('กกำลังโหลดข้อมูลล่าสุดจากระบบ...');
             loadDashboardData().finally(() => {
                 hideLoader();
                 showToast('อัปเดตข้อมูลล่าสุดเรียบร้อย', 'info');
