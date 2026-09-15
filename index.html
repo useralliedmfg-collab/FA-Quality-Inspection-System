@@ -1739,7 +1739,6 @@ main {
                                 <th class="p-3">วันที่/เวลาส่ง</th>
                                 <th class="p-3">แผนก</th>
                                 <th class="p-3">หัวข้อย่อย</th>
-                                <th class="p-3">FA NO. / DIECUT NO.</th>
                                 <th class="p-3">CUSTOMER</th>
                                 <th class="p-3">PART NO.</th>
                                 <th class="p-3">ผู้ส่งงาน</th>
@@ -4243,12 +4242,6 @@ console.log('ADMIN FILTER VALUES:', {
         const subtopic =
             r.subtopic || '-';
 
-        const faNo =
-            r.faNo ||
-            r.diecutNo ||
-            r.jigNo ||
-            '-';
-
         const customer =
             r.customer || '-';
 
@@ -4280,10 +4273,6 @@ console.log('ADMIN FILTER VALUES:', {
 
             <td class="px-4 py-3 whitespace-nowrap text-sm font-semibold text-slate-700">
                 ${subtopic}
-            </td>
-
-            <td class="px-4 py-3 whitespace-nowrap text-sm font-semibold text-slate-800">
-                ${faNo}
             </td>
 
             <td class="px-4 py-3 whitespace-nowrap text-sm text-slate-600">
