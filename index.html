@@ -1910,6 +1910,9 @@ main {
     try {
         const response = await fetch(SCRIPT_URL, {
             method: 'POST',
+            headers: {
+                'Content-Type': 'text/plain;charset=utf-8'
+            },
             body: JSON.stringify({
                 action: 'getCustomers'
             })
@@ -1917,16 +1920,32 @@ main {
 
         const result = await response.json();
 
+        console.log('GET CUSTOMER RESULT:', result);
+
         if (result.success && Array.isArray(result.customers)) {
-            DROPDOWN_DATA.customers = result.customers;
-            console.log('Customer data loaded:', DROPDOWN_DATA.customers);
+            DROPDOWN_DATA.customers = result.customers
+                .map(c => String(c).trim())
+                .filter(Boolean);
+
+            console.log(
+                'CUSTOMER LOADED:',
+                DROPDOWN_DATA.customers
+            );
         } else {
-            console.error('ไม่สามารถโหลด Customer ได้');
+            console.error(
+                'โหลด Customer ไม่สำเร็จ:',
+                result
+            );
+
             DROPDOWN_DATA.customers = [];
         }
 
     } catch (error) {
-        console.error('Error loading Customer:', error);
+        console.error(
+            'Error loading Customer:',
+            error
+        );
+
         DROPDOWN_DATA.customers = [];
     }
 }
