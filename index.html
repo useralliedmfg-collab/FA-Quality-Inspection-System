@@ -3639,13 +3639,13 @@ function renderUserDashboardTable(records) {
                             pendingName
                                 ? `
                                     <button
-                                        type="button"
-                                        onclick="confirmReceiverName('${escapeHtmlUserDashboard(record.id)}')"
-                                        class="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition shadow-sm"
-                                    >
-                                        <i class="fas fa-check"></i>
-                                        ยืนยันชื่อผู้รับ
-                                    </button>
+    type="button"
+    onclick="confirmReceiverName('${escapeHtmlUserDashboard(record.id)}', this)"
+    class="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition shadow-sm"
+>
+    <i class="fas fa-check"></i>
+    ยืนยันชื่อผู้รับ
+</button>
                                   `
                                 : ''
                         }
