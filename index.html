@@ -36,6 +36,55 @@
         }
         </script>
 
+    /* ==========================================
+   USER WORKSPACE
+   FORM LEFT + DASHBOARD RIGHT
+   ========================================== */
+
+.user-workspace {
+    display: grid;
+    grid-template-columns: 42% 58%;
+    gap: 24px;
+    width: 100%;
+    max-width: 1600px;
+    margin: 0 auto;
+    align-items: start;
+}
+
+.user-workspace > #viewUserForm,
+.user-workspace > #viewUserDashboard {
+    min-width: 0;
+    width: 100%;
+}
+
+.user-workspace > #viewUserDashboard {
+    max-height: calc(100vh - 110px);
+    overflow-y: auto;
+}
+
+@media (max-width: 1023px) {
+    .user-workspace {
+        grid-template-columns: 1fr;
+    }
+
+    .user-workspace > #viewUserDashboard {
+        max-height: none;
+        overflow-y: visible;
+    }
+}
+
+    .user-workspace {
+    display: grid;
+    grid-template-columns: 42% 58%;
+    gap: 24px;
+    align-items: start;
+}
+
+@media (max-width: 1024px) {
+    .user-workspace {
+        grid-template-columns: 1fr;
+    }
+}
     <style>
     /* =========================================================
        AMS MODERN UI ENHANCEMENT
@@ -967,51 +1016,6 @@ main {
 
     </div>
 
-<!-- ========================================== -->
-<!-- USER DASHBOARD BUTTON -->
-<!-- ========================================== -->
-<div class="max-w-3xl mx-auto mb-6">
-
-    <button
-        type="button"
-        onclick="openUserDashboard();"
-        class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-2xl p-5 shadow-lg hover:shadow-xl transition-all duration-200"
-    >
-
-        <div class="flex items-center justify-between">
-
-            <div class="flex items-center gap-4">
-
-                <div class="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center">
-
-                    <i class="fa-solid fa-chart-line text-xl"></i>
-
-                </div>
-
-                <div class="text-left">
-
-                    <h3 class="text-lg font-bold">
-                        Dashboard
-                    </h3>
-
-                    <p class="text-sm text-blue-100">
-                        ติดตามผลการตรวจสอบ QA 
-                    </p>
-
-                </div>
-
-            </div>
-
-            <div>
-                <i class="fa-solid fa-chevron-right text-lg"></i>
-            </div>
-
-        </div>
-
-    </button>
-
-</div>
-
 <!-- ALL SUBTOPICS -->
 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto">
 
@@ -1129,9 +1133,11 @@ main {
                 <!-- Subtopic buttons injected dynamically based on department -->
             </div>
         </section>
-
+        
+        <section id="viewUserWorkspace" class="hidden">
+    <div class="user-workspace">
         <!-- VIEW 3: USER FORM INPUT SCREEN -->
-        <section id="viewUserForm" class="space-y-6 hidden">
+        <section id="viewUserForm" class="space-y-6">
             <div class="flex items-center justify-between text-xs font-medium text-slate-500">
                 <div class="flex items-center space-x-2">
     <button onclick="showView('viewUserDeptSelect')" class="hover:text-sky-600">
@@ -1187,7 +1193,7 @@ main {
         <!-- ========================================== -->
 <!-- USER DASHBOARD -->
 <!-- ========================================== -->
-<section id="viewUserDashboard" class="hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+<section id="viewUserDashboard" class="space-y-6">
 
     <!-- ========================================== -->
 <!-- BACK TO USER HOME -->
@@ -1590,6 +1596,10 @@ main {
 </div>
 
 </section>
+        </div>
+</section>
+
+
 
         <!-- VIEW 4: ADMIN DASHBOARD VIEW -->
         <section id="viewAdminDashboard" class="space-y-6 hidden">
@@ -2027,12 +2037,12 @@ function populateMachineCategories() {
     // ==========================================
     // HIDE ALL MAIN VIEWS
     // ==========================================
-    [
-        'viewUserDeptSelect',
-        'viewUserForm',
-        'viewUserDashboard',
-        'viewAdminDashboard'
-    ].forEach(id => {
+
+            [
+    'viewUserDeptSelect',
+    'viewUserWorkspace',
+    'viewAdminDashboard'
+]
 
         const el = document.getElementById(id);
 
@@ -2423,7 +2433,8 @@ function populateMachineCategories() {
                 `;
             }
 
-            showView('viewUserForm');
+            showView('viewUserWorkspace');
+            loadUserDashboard();
         }
 
         function handleJigTypeChange(selectEl) {
@@ -3027,9 +3038,13 @@ function loadUserDashboard() {
     console.log('Loading User Dashboard...');
 
     // ใช้ข้อมูลชุดเดียวกับ Admin Dashboard
-    const records = Array.isArray(allJobRecords)
-        ? allJobRecords
-        : [];
+    const records = (Array.isArray(allJobRecords)
+    ? allJobRecords
+    : []
+).filter(r =>
+    String(r.subtopic || '').trim() ===
+    String(document.getElementById('inputSubtopic')?.value || '').trim()
+);
 
     // ==========================================
     // UPDATE KPI
@@ -3248,10 +3263,13 @@ function applyUserDashboardFilters() {
     // ==========================================
     // GET ALL RECORDS
     // ==========================================
-    const records = Array.isArray(allJobRecords)
-        ? allJobRecords
-        : [];
-
+    const records = (Array.isArray(allJobRecords)
+    ? allJobRecords
+    : []
+).filter(r =>
+    String(r.subtopic || '').trim() ===
+    String(document.getElementById('inputSubtopic')?.value || '').trim()
+);
 
     // ==========================================
     // GET FILTER VALUES
