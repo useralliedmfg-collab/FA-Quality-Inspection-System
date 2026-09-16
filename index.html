@@ -1741,6 +1741,7 @@ main {
                                 <th class="p-3">CUSTOMER</th>
                                 <th class="p-3">PART NO.</th>
                                 <th class="p-3">ผู้ส่งงาน</th>
+                                <th class="p-3">ผู้รับงาน</th>
                                 <th class="p-3 text-center">สถานะ/ผลตรวจ</th>
                                 <th class="p-3 text-center">Action</th>
                             </tr>
@@ -4288,6 +4289,9 @@ if (subtopic === 'FIRST SHOT FA') {
             r.jigSender ||
             '-';
 
+        const receiverName =
+            r.receiverName || '-';
+
         const recordId =
             r.id || '';
 
@@ -4315,6 +4319,10 @@ if (subtopic === 'FIRST SHOT FA') {
 
             <td class="px-4 py-3 whitespace-nowrap text-sm text-slate-600">
                 ${sender}
+            </td>
+
+            <td class="px-4 py-3 whitespace-nowrap text-sm font-semibold text-slate-700">
+                ${receiverName}
             </td>
 
             <td class="px-4 py-3 whitespace-nowrap">
